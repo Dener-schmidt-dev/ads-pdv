@@ -106,4 +106,4 @@ Instalador em `dist/desktop/`. Ver [installer/README.md](installer/README.md).
 - [Instalação](docs/instalacao.md)
 - [Atalhos do PDV](docs/atalhos-pdv.md)
 - [Próximas etapas](docs/proximas-etapas.md)
-<!-- bot-contribuicoes: 8 -->
+<!-- bot-contribuicoes: 9 -->
