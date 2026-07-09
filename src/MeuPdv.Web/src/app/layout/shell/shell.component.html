@@ -1,0 +1,86 @@
+<div class="shell" [class.shell--collapsed]="menuRecolhido()">
+  <aside class="shell__nav">
+    <div class="shell__brand">
+      <div class="shell__mark" aria-hidden="true">M</div>
+      <div class="shell__brand-text">
+        <span class="shell__logo">MeuPDV</span>
+        <span class="shell__tagline">Ponto de venda</span>
+      </div>
+      <button type="button" class="shell__toggle" (click)="toggleMenu()" title="Recolher menu">
+        <span class="mi mi--sm">menu</span>
+      </button>
+    </div>
+
+    <nav class="shell__menu scroll-area">
+      <a routerLink="/inicio" routerLinkActive="active">
+        <span class="mi" aria-hidden="true">home</span>
+        <span class="shell__label">Início</span>
+      </a>
+      <a routerLink="/venda" routerLinkActive="active">
+        <span class="mi" aria-hidden="true">point_of_sale</span>
+        <span class="shell__label">Venda</span>
+      </a>
+      @if (auth.temPermissao('CancelarVenda')) {
+        <a routerLink="/vendas" routerLinkActive="active">
+          <span class="mi" aria-hidden="true">undo</span>
+          <span class="shell__label">Estornos</span>
+        </a>
+      }
+      @if (auth.temPermissao('CadastrarProduto')) {
+        <a routerLink="/produtos" routerLinkActive="active" [routerLinkActiveOptions]="{ paths: 'subset' }">
+          <span class="mi" aria-hidden="true">inventory_2</span>
+          <span class="shell__label">Produtos</span>
+        </a>
+      }
+      <a routerLink="/estoque" routerLinkActive="active">
+        <span class="mi" aria-hidden="true">warehouse</span>
+        <span class="shell__label">Estoque</span>
+      </a>
+      <a routerLink="/caixa" routerLinkActive="active">
+        <span class="mi" aria-hidden="true">account_balance_wallet</span>
+        <span class="shell__label">Caixa</span>
+      </a>
+      <a routerLink="/clientes" routerLinkActive="active" [routerLinkActiveOptions]="{ paths: 'subset' }">
+        <span class="mi" aria-hidden="true">groups</span>
+        <span class="shell__label">Clientes</span>
+      </a>
+      @if (auth.temPermissao('VisualizarRelatorios')) {
+        <a routerLink="/relatorios" routerLinkActive="active">
+          <span class="mi" aria-hidden="true">bar_chart</span>
+          <span class="shell__label">Relatórios</span>
+        </a>
+      }
+      @if (auth.temPermissao('AcessarConfiguracoes')) {
+        <div class="shell__section">Administração</div>
+        <a routerLink="/usuarios" routerLinkActive="active" [routerLinkActiveOptions]="{ paths: 'subset' }">
+          <span class="mi" aria-hidden="true">manage_accounts</span>
+          <span class="shell__label">Usuários</span>
+        </a>
+        <a routerLink="/configuracoes" routerLinkActive="active">
+          <span class="mi" aria-hidden="true">tune</span>
+          <span class="shell__label">Configurações</span>
+        </a>
+        <a routerLink="/backup" routerLinkActive="active">
+          <span class="mi" aria-hidden="true">backup</span>
+          <span class="shell__label">Backup</span>
+        </a>
+      }
+    </nav>
+
+    <div class="shell__user">
+      <span class="badge badge--live shell__offline">Offline</span>
+      <div class="shell__user-row">
+        <span class="mi mi--sm shell__user-icon" aria-hidden="true">person</span>
+        <span class="shell__nome">{{ auth.usuario()?.nome }}</span>
+      </div>
+      <button type="button" class="shell__sair" (click)="sair()">
+        <span class="mi mi--sm" aria-hidden="true">logout</span>
+        <span class="shell__label">Sair</span>
+      </button>
+    </div>
+  </aside>
+
+  <main class="shell__content scroll-area">
+    <router-outlet />
+  </main>
+</div>

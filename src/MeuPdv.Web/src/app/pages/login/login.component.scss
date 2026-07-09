@@ -1,0 +1,150 @@
+.login {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  background: var(--mpdv-bg);
+
+  @media (max-width: 860px) {
+    grid-template-columns: 1fr;
+    .login__hero { display: none; }
+  }
+}
+
+.login__hero {
+  background: var(--mpdv-sidebar);
+  color: var(--mpdv-on-sidebar);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2.5rem;
+}
+
+.login__hero-inner {
+  max-width: 360px;
+
+  h2 {
+    margin: 1rem 0 0.5rem;
+    font-size: 1.75rem;
+    font-weight: 700;
+    letter-spacing: -0.03em;
+  }
+
+  > p {
+    margin: 0;
+    color: var(--mpdv-on-sidebar-muted);
+    line-height: 1.5;
+  }
+}
+
+.login__mark {
+  width: 52px;
+  height: 52px;
+  border-radius: var(--mpdv-radius);
+  background: var(--mpdv-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+.login__features {
+  margin: 1.75rem 0 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+
+  li {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-size: 0.9rem;
+    color: #d4d4d8;
+
+    .mi { color: #93c5fd; }
+  }
+}
+
+.login__card {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 2.5rem 3rem;
+  background: var(--mpdv-surface);
+
+  header h1 {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+
+  header p {
+    margin: 0.35rem 0 0;
+    color: var(--mpdv-text-muted);
+    font-size: 0.9rem;
+  }
+
+  label {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    margin-top: 1rem;
+  }
+}
+
+.login__label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--mpdv-text-secondary);
+}
+
+.login__field {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0 0.75rem;
+  border: 1px solid var(--mpdv-border-strong);
+  border-radius: var(--mpdv-radius-sm);
+  background: var(--mpdv-surface-muted);
+
+  &:focus-within {
+    border-color: var(--mpdv-primary);
+    box-shadow: var(--mpdv-focus-ring);
+    background: var(--mpdv-surface);
+  }
+
+  .mi { color: var(--mpdv-text-muted); }
+
+  input {
+    flex: 1;
+    border: none;
+    background: transparent;
+    padding: 0.65rem 0;
+    font-size: 0.95rem;
+
+    &:focus {
+      outline: none;
+      box-shadow: none;
+    }
+  }
+}
+
+.login__remember {
+  flex-direction: row !important;
+  align-items: center;
+  gap: 0.5rem !important;
+  font-size: 0.85rem !important;
+  color: var(--mpdv-text-secondary);
+  cursor: pointer;
+}
+
+.login__submit {
+  width: 100%;
+  margin-top: 1.25rem;
+  padding: 0.75rem;
+  font-size: 0.95rem;
+}

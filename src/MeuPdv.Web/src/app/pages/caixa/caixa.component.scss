@@ -1,0 +1,447 @@
+.caixa__header {
+  align-items: center;
+}
+
+.caixa__status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.4rem 0.85rem;
+  border-radius: 999px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  border: 1px solid transparent;
+
+  &--open {
+    background: var(--mpdv-success-soft);
+    color: #166534;
+    border-color: #bbf7d0;
+  }
+
+  &--closed {
+    background: var(--mpdv-danger-soft);
+    color: #991b1b;
+    border-color: #fecaca;
+  }
+}
+
+.caixa__card-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+
+  h2 {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 700;
+  }
+
+  p {
+    margin: 0.25rem 0 0;
+    font-size: 0.82rem;
+    color: var(--mpdv-text-muted);
+  }
+}
+
+.caixa__card-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: var(--mpdv-radius-sm);
+  flex-shrink: 0;
+
+  .mi { font-size: 22px; }
+
+  &--primary {
+    background: var(--mpdv-primary-soft);
+    color: var(--mpdv-primary);
+  }
+
+  &--mov {
+    background: #eff6ff;
+    color: #2563eb;
+  }
+
+  &--fechar {
+    background: var(--mpdv-danger-soft);
+    color: var(--mpdv-danger);
+  }
+}
+
+.caixa__form {
+  margin-bottom: 0.85rem;
+}
+
+.caixa__abrir {
+  max-width: 32rem;
+}
+
+.caixa__btn-abrir,
+.caixa__btn-fechar {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.caixa__sessao-info {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+  padding: 1rem 1.15rem;
+  background: linear-gradient(135deg, #eff6ff 0%, #f0fdf4 100%);
+  border-color: #dbeafe;
+}
+
+.caixa__sessao-main {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  min-width: 0;
+
+  h2 {
+    margin: 0;
+    font-size: 1.05rem;
+    font-weight: 700;
+  }
+
+  p {
+    margin: 0.2rem 0 0;
+    font-size: 0.82rem;
+    color: var(--mpdv-text-secondary);
+  }
+}
+
+.caixa__sessao-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 3rem;
+  height: 3rem;
+  border-radius: var(--mpdv-radius);
+  background: var(--mpdv-surface);
+  border: 1px solid var(--mpdv-primary-muted);
+  color: var(--mpdv-primary);
+  box-shadow: var(--mpdv-shadow-sm);
+
+  .mi { font-size: 26px; }
+}
+
+.caixa__sessao-kpi {
+  padding: 0.65rem 1rem;
+  background: var(--mpdv-surface);
+  border: 1px solid var(--mpdv-border);
+  border-radius: var(--mpdv-radius-sm);
+  text-align: right;
+  min-width: 8rem;
+}
+
+.caixa__kpi-label {
+  display: block;
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--mpdv-text-muted);
+  margin-bottom: 0.15rem;
+}
+
+.caixa__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.caixa__card {
+  margin-bottom: 0;
+  display: flex;
+  flex-direction: column;
+
+  &--fechar {
+    border-color: #fecaca;
+    background: linear-gradient(180deg, #fff 0%, #fffafa 100%);
+  }
+}
+
+.caixa__acoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  margin-top: auto;
+}
+
+.caixa__acao {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.35rem 0.65rem;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  font-family: inherit;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition:
+    background var(--mpdv-transition),
+    border-color var(--mpdv-transition),
+    box-shadow var(--mpdv-transition);
+
+  .mi {
+    font-size: 15px;
+    font-variation-settings: 'FILL' 1, 'wght' 500, 'GRAD' 0, 'opsz' 20;
+  }
+
+  &:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+  }
+
+  &:hover:not(:disabled) {
+    box-shadow: var(--mpdv-shadow-sm);
+  }
+
+  &--suprimento {
+    background: linear-gradient(180deg, #ecfdf5 0%, #d1fae5 100%);
+    color: #047857;
+    border-color: #6ee7b7;
+    .mi { color: #059669; }
+  }
+
+  &--sangria {
+    background: linear-gradient(180deg, #fef2f2 0%, #fee2e2 100%);
+    color: #b91c1c;
+    border-color: #fca5a5;
+    .mi { color: #dc2626; }
+  }
+}
+
+.caixa__btn-fechar {
+  margin-top: auto;
+  width: 100%;
+  justify-content: center;
+}
+
+/* Resumo fechamento */
+.caixa__resumo {
+  border-color: #bbf7d0;
+  background: linear-gradient(180deg, #f0fdf4 0%, #fff 40%);
+
+  &--dif {
+    border-color: #fde68a;
+    background: linear-gradient(180deg, #fffbeb 0%, #fff 40%);
+  }
+}
+
+.caixa__resumo-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+
+  h2 {
+    margin: 0;
+    font-size: 1.05rem;
+  }
+
+  p {
+    margin: 0.2rem 0 0;
+    font-size: 0.82rem;
+    color: var(--mpdv-text-muted);
+  }
+}
+
+.caixa__resumo-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  background: var(--mpdv-success-soft);
+  color: var(--mpdv-success);
+  flex-shrink: 0;
+
+  .mi { font-size: 22px; }
+}
+
+.caixa__resumo-fechar {
+  margin-left: auto;
+}
+
+.caixa__kpis {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 0.65rem;
+}
+
+.caixa__kpi {
+  padding: 0.65rem 0.75rem;
+  background: var(--mpdv-surface);
+  border: 1px solid var(--mpdv-border);
+  border-radius: var(--mpdv-radius-sm);
+
+  strong {
+    display: block;
+    font-size: 1rem;
+    font-variant-numeric: tabular-nums;
+  }
+
+  &--primary strong { color: var(--mpdv-primary); }
+  &--success strong { color: #15803d; }
+  &--danger strong { color: var(--mpdv-danger); }
+}
+
+.caixa__formas {
+  margin-top: 1rem;
+  padding-top: 0.85rem;
+  border-top: 1px solid var(--mpdv-border);
+
+  h3 {
+    margin: 0 0 0.5rem;
+    font-size: 0.78rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--mpdv-text-muted);
+  }
+
+  ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+  }
+
+  li {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    font-size: 0.85rem;
+    padding: 0.35rem 0.5rem;
+    background: var(--mpdv-surface-muted);
+    border-radius: var(--mpdv-radius-xs);
+
+    strong {
+      font-variant-numeric: tabular-nums;
+    }
+  }
+}
+
+/* Histórico */
+.caixa__historico-head h2 {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin: 0 0 1rem;
+
+  .mi { color: var(--mpdv-primary); }
+}
+
+.caixa__empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 2.5rem 1rem;
+  color: var(--mpdv-text-muted);
+  text-align: center;
+
+  .mi {
+    font-size: 40px;
+    opacity: 0.35;
+  }
+
+  p {
+    margin: 0;
+    font-size: 0.875rem;
+  }
+}
+
+.caixa__tabela {
+  table-layout: fixed;
+  width: 100%;
+}
+
+.caixa__col {
+  &--caixa { width: 7rem; }
+  &--status { width: 9rem; }
+  &--data { width: 8.5rem; }
+  &--valor { width: 7rem; }
+}
+
+.caixa__th,
+.caixa__td {
+  &--caixa,
+  &--status,
+  &--data {
+    text-align: left;
+    white-space: nowrap;
+  }
+
+  &--valor {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+    padding-right: 0.85rem !important;
+  }
+}
+
+.caixa__th--valor {
+  padding-right: 0.85rem !important;
+}
+
+.caixa__terminal {
+  font-weight: 600;
+  font-size: 0.82rem;
+  color: var(--mpdv-text);
+}
+
+.caixa__badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.2rem 0.55rem;
+  border-radius: 999px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  border: 1px solid transparent;
+  white-space: nowrap;
+
+  .mi {
+    font-size: 13px;
+    font-variation-settings: 'FILL' 1, 'wght' 500, 'GRAD' 0, 'opsz' 20;
+  }
+
+  &--open {
+    background: var(--mpdv-success-soft);
+    color: #166534;
+    border-color: #bbf7d0;
+    .mi { color: #16a34a; }
+  }
+
+  &--closed {
+    background: #f4f4f5;
+    color: var(--mpdv-text-secondary);
+    border-color: var(--mpdv-border);
+    .mi { color: var(--mpdv-text-muted); }
+  }
+}
+
+.caixa__em-aberto {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--mpdv-primary);
+}
+
+.caixa__row--open td {
+  background: rgba(240, 253, 244, 0.45);
+}

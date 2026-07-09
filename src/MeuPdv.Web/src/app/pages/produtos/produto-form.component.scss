@@ -1,0 +1,14 @@
+.produto-form {
+  max-width: 920px;
+}
+
+.form-grid .form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+textarea {
+  resize: vertical;
+  min-height: 4.5rem;
+}

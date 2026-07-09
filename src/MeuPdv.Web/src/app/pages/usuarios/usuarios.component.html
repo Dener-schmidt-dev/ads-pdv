@@ -1,0 +1,46 @@
+<div class="page">
+  <header class="page__header">
+    <h1>Usuários</h1>
+    <div class="page__actions">
+      <a routerLink="/usuarios/novo" class="btn-primary">Novo usuário</a>
+    </div>
+  </header>
+
+  <section class="panel panel--list">
+    <div class="table-scroll scroll-area">
+    <table>
+      <thead>
+        <tr>
+          <th>Login</th>
+          <th>Nome</th>
+          <th>Perfil</th>
+          <th>Status</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (u of usuariosPagina().itens; track u.id) {
+          <tr [class.inativo]="!u.ativo">
+            <td>{{ u.login }}</td>
+            <td>{{ u.nome }}</td>
+            <td>{{ labelPerfil(u.perfil) }}</td>
+            <td>{{ u.ativo ? 'Ativo' : 'Inativo' }}</td>
+            <td>
+              @if (u.ativo && u.login !== 'admin') {
+                <button type="button" class="btn-link danger" (click)="inativar(u)">Inativar</button>
+              }
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+    </div>
+    <app-pagination
+      [pagina]="pagina()"
+      [tamanho]="tamanhoPagina"
+      [total]="usuariosPagina().total"
+      rotulo="usuário"
+      (paginaChange)="irParaPagina($event)"
+    />
+  </section>
+</div>

@@ -1,0 +1,246 @@
+<div class="page">
+  <header class="page__header">
+    <div>
+      <h1>Configurações</h1>
+      <p class="page__subtitle">Ajuste empresa, sistema, licença e segurança</p>
+    </div>
+  </header>
+
+  <div class="side-layout">
+    <nav class="side-nav" aria-label="Seções de configuração">
+      @for (item of nav; track item.id) {
+        <button
+          type="button"
+          class="side-nav__item"
+          [class.active]="secaoAtiva() === item.id"
+          (click)="selecionarSecao(item.id)"
+        >
+          <span class="mi" aria-hidden="true">{{ item.icon }}</span>
+          <span>
+            <strong>{{ item.label }}</strong>
+            <small>{{ item.descricao }}</small>
+          </span>
+        </button>
+      }
+    </nav>
+
+    <div class="panel side-panel">
+      <header class="side-panel__head">
+        <h2>{{ tituloSecao() }}</h2>
+      </header>
+
+      @switch (secaoAtiva()) {
+        @case ('empresa') {
+          <div class="section-block">
+            <h3 class="section-block__title">
+              <span class="mi" aria-hidden="true">badge</span>
+              Identificação
+            </h3>
+            <div class="form-grid">
+              <label>Nome do estabelecimento <input [(ngModel)]="empresa.nomeEstabelecimento" /></label>
+              <label>CNPJ <input [(ngModel)]="empresa.cnpj" /></label>
+              <label class="full">Endereço <input [(ngModel)]="empresa.endereco" /></label>
+            </div>
+          </div>
+
+          <div class="section-block">
+            <h3 class="section-block__title">
+              <span class="mi" aria-hidden="true">qr_code</span>
+              Recebimento Pix
+            </h3>
+            <p class="hint">QR Code gerado localmente. Confirmação do pagamento é manual pelo operador.</p>
+            <div class="form-grid">
+              <label>
+                Tipo da chave
+                <select [(ngModel)]="empresa.tipoChavePix">
+                  @for (t of tiposChavePix; track t) {
+                    <option [value]="t">{{ t }}</option>
+                  }
+                </select>
+              </label>
+              <label class="full">Chave Pix
+                <input [(ngModel)]="empresa.chavePix" placeholder="E-mail, CPF, telefone ou aleatória" />
+              </label>
+            </div>
+          </div>
+
+          <footer class="side-panel__footer">
+            <button type="button" class="btn-primary" [disabled]="salvando()" (click)="salvarEmpresa()">
+              <span class="mi mi--sm" aria-hidden="true">save</span>
+              Salvar empresa
+            </button>
+          </footer>
+        }
+
+        @case ('sistema') {
+          <div class="section-block">
+            <h3 class="section-block__title">
+              <span class="mi mi--sm" aria-hidden="true">point_of_sale</span>
+              Operação do PDV
+            </h3>
+            <div class="form-grid">
+              <label class="checkbox full">
+                <input type="checkbox" [(ngModel)]="sistema.estoqueNegativoPermitido" />
+                Estoque negativo permitido
+              </label>
+              <label>Limite desconto operador <input appPercentInput [(ngModel)]="sistema.limiteDescontoOperadorPercentual" /></label>
+            </div>
+          </div>
+
+          <div class="section-block">
+            <h3 class="section-block__title">
+              <span class="mi mi--sm" aria-hidden="true">print</span>
+              Impressão
+            </h3>
+            <div class="form-grid">
+              <label class="checkbox full">
+                <input type="checkbox" [(ngModel)]="sistema.impressaoAutomatica" />
+                Impressão automática após venda
+              </label>
+              <label class="full">Nome da impressora <input [(ngModel)]="sistema.nomeImpressora" /></label>
+            </div>
+          </div>
+
+          <div class="section-block">
+            <h3 class="section-block__title">
+              <span class="mi mi--sm" aria-hidden="true">backup</span>
+              Backup automático
+            </h3>
+            <div class="form-grid">
+              <label class="full">Diretório <input [(ngModel)]="sistema.diretorioBackup" /></label>
+              <label>Intervalo (minutos) <input type="number" min="1" [(ngModel)]="sistema.intervaloBackupMinutos" /></label>
+              <label>Retenção (dias) <input type="number" min="1" [(ngModel)]="sistema.diasRetencaoBackup" /></label>
+            </div>
+          </div>
+
+          <footer class="side-panel__footer">
+            <button type="button" class="btn-primary" [disabled]="salvando()" (click)="salvarSistema()">
+              <span class="mi mi--sm" aria-hidden="true">save</span>
+              Salvar sistema
+            </button>
+          </footer>
+        }
+
+        @case ('personalizacao') {
+          <div class="section-block">
+            <h3 class="section-block__title">
+              <span class="mi" aria-hidden="true">palette</span>
+              Aparência do PDV
+            </h3>
+            <p class="hint">Estas opções valem para todos os usuários e terminais deste estabelecimento.</p>
+            <div class="form-grid">
+              <label>
+                Cor primária
+                <input type="color" [(ngModel)]="pdv.corPrimaria" />
+              </label>
+              <label class="checkbox full">
+                <input type="checkbox" [(ngModel)]="pdv.exibirNomeEmpresa" />
+                Exibir nome da empresa no cabeçalho da tela de venda
+              </label>
+              @if (pdv.exibirNomeEmpresa && pdv.nomeEmpresa) {
+                <p class="hint full">Será exibido: <strong>{{ pdv.nomeEmpresa }}</strong> (cadastro em Empresa)</p>
+              }
+            </div>
+          </div>
+
+          <div class="section-block">
+            <h3 class="section-block__title">
+              <span class="mi" aria-hidden="true">image</span>
+              Imagem de fundo da venda
+            </h3>
+            <div class="config-pdv-preview">
+              @if (previewImagemFundo) {
+                <img [src]="previewImagemFundo" alt="Prévia do fundo do PDV" />
+              } @else {
+                <span class="config-pdv-preview__vazio">Sem imagem de fundo</span>
+              }
+            </div>
+            <div class="form-actions config-pdv-imagem">
+              <label class="btn-secondary">
+                Escolher imagem
+                <input type="file" accept="image/jpeg,image/png,image/webp" hidden (change)="onImagemFundoSelecionada($event)" />
+              </label>
+              @if (previewImagemFundo || pdv.temImagemFundo) {
+                <button type="button" class="btn-link danger" (click)="marcarRemoverImagemFundo()">Remover imagem</button>
+              }
+            </div>
+            <p class="hint">JPG, PNG ou WebP — máximo 2 MB.</p>
+          </div>
+
+          <footer class="side-panel__footer">
+            <button type="button" class="btn-primary" [disabled]="salvando()" (click)="salvarPersonalizacao()">
+              <span class="mi mi--sm" aria-hidden="true">save</span>
+              Salvar personalização
+            </button>
+          </footer>
+        }
+
+        @case ('licenca') {
+          @if (licenca(); as l) {
+            <div class="status-card"
+              [class.status-card--ok]="l.valida && !l.emTolerancia"
+              [class.status-card--warn]="l.emTolerancia"
+              [class.status-card--err]="!l.valida">
+              <span class="mi" aria-hidden="true">verified_user</span>
+              <div>
+                <strong>
+                  @if (l.valida && !l.emTolerancia) { Licença ativa }
+                  @else if (l.emTolerancia) { Licença em tolerância }
+                  @else { Licença inválida }
+                </strong>
+                @if (l.validade) {
+                  <span>Validade: {{ l.validade | date:'dd/MM/yyyy' }}</span>
+                }
+                @if (l.aviso) {
+                  <span class="aviso">{{ l.aviso }}</span>
+                }
+              </div>
+            </div>
+          }
+
+          <div class="section-block">
+            <h3 class="section-block__title">
+              <span class="mi mi--sm" aria-hidden="true">key</span>
+              Ativar chave
+            </h3>
+            <div class="form-grid">
+              <label class="full">
+                Chave de licença
+                <input [(ngModel)]="chaveLicenca" placeholder="MPDV-AAAAMMDD-XXXXXXXX" />
+              </label>
+            </div>
+            <p class="hint">Formato offline: MPDV-dataValidade-checksum. Validação online opcional na API.</p>
+          </div>
+
+          <footer class="side-panel__footer">
+            <button type="button" class="btn-primary" [disabled]="salvando()" (click)="ativarLicenca()">
+              <span class="mi mi--sm" aria-hidden="true">verified</span>
+              Ativar licença
+            </button>
+          </footer>
+        }
+
+        @case ('senha') {
+          <div class="section-block">
+            <h3 class="section-block__title">
+              <span class="mi mi--sm" aria-hidden="true">password</span>
+              Alterar senha de acesso
+            </h3>
+            <div class="form-grid config-senha">
+              <label>Senha atual <input type="password" [(ngModel)]="senhaAtual" autocomplete="current-password" /></label>
+              <label>Nova senha <input type="password" [(ngModel)]="senhaNova" autocomplete="new-password" /></label>
+              <label>Confirmar nova senha <input type="password" [(ngModel)]="senhaNovaConfirmacao" autocomplete="new-password" /></label>
+            </div>
+          </div>
+
+          <footer class="side-panel__footer">
+            <button type="button" class="btn-primary" [disabled]="salvando()" (click)="alterarSenha()">
+              <span class="mi mi--sm" aria-hidden="true">lock_reset</span>
+              Alterar senha
+            </button>
+          </footer>
+        }
+      }
+    </div>
+  </div>
+</div>

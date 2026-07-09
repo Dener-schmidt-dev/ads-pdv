@@ -1,0 +1,46 @@
+<div class="lookup" [class.lookup--disabled]="disabled" [class.lookup--dropup]="dropUp">
+  <div class="lookup__field">
+    <span class="mi lookup__icon" aria-hidden="true">person_search</span>
+    <input
+      #inputRef
+      type="text"
+      class="lookup__input"
+      [placeholder]="placeholder"
+      [(ngModel)]="termo"
+      [disabled]="disabled"
+      (input)="onInput()"
+      (keydown)="onKeydown($event)"
+      (focus)="onInput()"
+      (blur)="onBlur()"
+      autocomplete="off"
+    />
+    @if (selecionado && !disabled) {
+      <button type="button" class="lookup__clear" (click)="limpar()" title="Remover cliente">
+        <span class="mi mi--sm">close</span>
+      </button>
+    }
+  </div>
+
+  @if (aberto()) {
+    <ul class="lookup__lista scroll-area">
+      @for (c of sugestoes(); track c.id; let i = $index) {
+        <li [class.active]="i === indice()" (mousedown)="selecionar(c); $event.preventDefault()">
+          <span class="lookup__item-nome">{{ c.nome }}</span>
+          @if (c.cpf || c.telefone) {
+            <span class="lookup__item-meta">{{ c.cpf || c.telefone }}</span>
+          }
+        </li>
+      }
+      @if (mostrarCriar()) {
+        <li
+          class="lookup__criar"
+          [class.active]="indice() === indiceCriar()"
+          (mousedown)="abrirCriar(); $event.preventDefault()"
+        >
+          <span class="mi mi--sm">person_add</span>
+          Criar novo cliente
+        </li>
+      }
+    </ul>
+  }
+</div>

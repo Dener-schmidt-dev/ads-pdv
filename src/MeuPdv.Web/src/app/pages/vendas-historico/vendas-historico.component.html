@@ -1,0 +1,77 @@
+<div class="page">
+  <header class="page__header">
+    <h1>Vendas — estorno</h1>
+  </header>
+
+  <section class="panel filters">
+    <input type="text" placeholder="Buscar por número" [(ngModel)]="busca" (keyup.enter)="buscar()" />
+    <button type="button" (click)="buscar()">Buscar</button>
+  </section>
+
+  <section class="panel panel--list">
+    <p class="hint">Somente vendas do caixa ainda aberto podem ser estornadas.</p>
+    <div class="table-scroll scroll-area">
+    <table>
+      <thead>
+        <tr>
+          <th>Nº</th>
+          <th>Data</th>
+          <th>Total</th>
+          <th>Pagamentos</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (v of vendas(); track v.id) {
+          <tr>
+            <td>{{ v.numero }}</td>
+            <td>{{ v.data | date:'dd/MM/yyyy HH:mm' }}</td>
+            <td class="col-valor">{{ v.total | brl }}</td>
+            <td>{{ v.formasPagamento }}</td>
+            <td>
+              <button type="button" class="btn-link" (click)="verDetalhe(v)">Detalhe</button>
+              @if (auth.temPermissao('CancelarVenda')) {
+                <button type="button" class="btn-link danger" (click)="abrirCancelar(v)">Estornar</button>
+              }
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+    </div>
+    <app-pagination
+      [pagina]="pagina"
+      [tamanho]="tamanhoPagina"
+      [total]="totalVendas()"
+      rotulo="venda"
+      (paginaChange)="irParaPagina($event)"
+    />
+  </section>
+
+  @if (detalhe(); as d) {
+    <section class="panel">
+      <h2>Venda {{ d.numero }}</h2>
+      <p>Status: {{ d.status }} | Total: {{ d.total | brl }}</p>
+      <ul>
+        @for (item of d.itens; track item.descricao) {
+          <li>{{ item.quantidade }} x {{ item.descricao }} · {{ item.total | brl }}</li>
+        }
+      </ul>
+    </section>
+  }
+
+  @if (mostrarCancelar()) {
+    <div class="modal-overlay" (click)="mostrarCancelar.set(false)">
+      <div class="modal-card" (click)="$event.stopPropagation()">
+        <h3>Estornar venda {{ vendaSelecionada()?.numero }}</h3>
+        <label>Motivo (obrigatório) <input [(ngModel)]="motivoCancelamento" /></label>
+        <div class="form-actions">
+          <button type="button" (click)="mostrarCancelar.set(false)">Cancelar</button>
+          <button type="button" class="btn-primary btn-primary--danger" [disabled]="processando()" (click)="confirmarCancelamento()">
+            Confirmar estorno
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+</div>

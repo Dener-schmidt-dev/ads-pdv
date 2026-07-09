@@ -1,0 +1,225 @@
+.date-input {
+  position: relative;
+  width: 100%;
+  min-width: 148px;
+}
+
+.date-input__field {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  min-height: 2.35rem;
+  border: 1px solid var(--mpdv-border-strong);
+  border-radius: var(--mpdv-radius-sm);
+  background: var(--mpdv-surface);
+  transition:
+    border-color var(--mpdv-transition),
+    box-shadow var(--mpdv-transition);
+
+  &:hover:not(.date-input__field--disabled) {
+    border-color: var(--mpdv-primary-muted);
+  }
+
+  &--open,
+  &:focus-within {
+    border-color: var(--mpdv-primary);
+    box-shadow: var(--mpdv-focus-ring);
+  }
+
+  &--disabled {
+    background: var(--mpdv-surface-muted);
+    cursor: not-allowed;
+  }
+}
+
+.date-input__text {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  background: transparent;
+  padding: 0.5rem 0.35rem 0.5rem 0.65rem;
+  font-family: inherit;
+  font-size: 0.875rem;
+  color: var(--mpdv-text);
+  cursor: pointer;
+
+  &:disabled {
+    color: var(--mpdv-text-muted);
+    cursor: not-allowed;
+  }
+
+  &::placeholder {
+    color: var(--mpdv-text-muted);
+  }
+}
+
+.date-input__btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.35rem;
+  height: 2.35rem;
+  border: none;
+  background: transparent;
+  color: var(--mpdv-text-muted);
+  cursor: pointer;
+  flex-shrink: 0;
+  border-radius: 0 var(--mpdv-radius-sm) var(--mpdv-radius-sm) 0;
+  transition: color var(--mpdv-transition), background var(--mpdv-transition);
+
+  &:hover:not(:disabled) {
+    color: var(--mpdv-primary);
+    background: var(--mpdv-primary-soft);
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+}
+
+.date-input__popup {
+  position: absolute;
+  top: calc(100% + 0.35rem);
+  left: 0;
+  z-index: 200;
+  width: min(100%, 280px);
+  padding: 0.75rem;
+  background: var(--mpdv-surface);
+  border: 1px solid var(--mpdv-border);
+  border-radius: var(--mpdv-radius);
+  box-shadow: var(--mpdv-shadow-lg);
+}
+
+.date-input__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 0.65rem;
+}
+
+.date-input__mes {
+  margin: 0;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--mpdv-text);
+  text-transform: capitalize;
+}
+
+.date-input__nav {
+  display: flex;
+  gap: 0.2rem;
+}
+
+.date-input__nav-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.85rem;
+  height: 1.85rem;
+  border: 1px solid var(--mpdv-border);
+  border-radius: var(--mpdv-radius-xs);
+  background: var(--mpdv-surface);
+  color: var(--mpdv-text-secondary);
+  cursor: pointer;
+  transition:
+    border-color var(--mpdv-transition),
+    color var(--mpdv-transition),
+    background var(--mpdv-transition);
+
+  &:hover {
+    border-color: var(--mpdv-primary-muted);
+    color: var(--mpdv-primary);
+    background: var(--mpdv-primary-soft);
+  }
+}
+
+.date-input__weekdays,
+.date-input__grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 0.15rem;
+}
+
+.date-input__weekdays {
+  margin-bottom: 0.35rem;
+
+  span {
+    text-align: center;
+    font-size: 0.68rem;
+    font-weight: 700;
+    color: var(--mpdv-text-muted);
+    padding: 0.15rem 0;
+  }
+}
+
+.date-input__day {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  aspect-ratio: 1;
+  border: none;
+  border-radius: var(--mpdv-radius-xs);
+  background: transparent;
+  font-family: inherit;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--mpdv-text);
+  cursor: pointer;
+  transition:
+    background var(--mpdv-transition),
+    color var(--mpdv-transition);
+
+  &:hover {
+    background: var(--mpdv-primary-soft);
+    color: var(--mpdv-primary-hover);
+  }
+
+  &--out {
+    color: var(--mpdv-text-muted);
+    opacity: 0.55;
+  }
+
+  &--today {
+    font-weight: 700;
+    box-shadow: inset 0 0 0 1px var(--mpdv-primary-muted);
+  }
+
+  &--selected {
+    background: var(--mpdv-primary);
+    color: #fff;
+    font-weight: 700;
+
+    &:hover {
+      background: var(--mpdv-primary-hover);
+      color: #fff;
+    }
+  }
+}
+
+.date-input__footer {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-top: 0.65rem;
+  padding-top: 0.55rem;
+  border-top: 1px solid var(--mpdv-border);
+}
+
+.date-input__action {
+  border: none;
+  background: transparent;
+  padding: 0.25rem 0.35rem;
+  font-family: inherit;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--mpdv-primary);
+  cursor: pointer;
+  border-radius: var(--mpdv-radius-xs);
+
+  &:hover {
+    background: var(--mpdv-primary-soft);
+  }
+}

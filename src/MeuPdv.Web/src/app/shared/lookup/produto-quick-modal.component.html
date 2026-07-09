@@ -1,0 +1,29 @@
+<div class="modal-overlay pdv-modal-overlay" (click)="fechar()">
+  <div class="modal-card lookup-modal" (click)="$event.stopPropagation()">
+    <h3>
+      <span class="mi mi--sm">inventory_2</span>
+      Novo produto
+    </h3>
+    <p class="lookup-modal__hint">Cadastro rápido para usar na venda. Você pode completar os dados depois em Produtos.</p>
+    <div class="form-grid">
+      <label class="full">
+        Descrição
+        <input [(ngModel)]="form.descricao" required autofocus />
+      </label>
+      <label>
+        Preço de venda
+        <input appCurrencyInput [(ngModel)]="form.precoVenda" />
+      </label>
+      <label>
+        Cód. barras
+        <input [(ngModel)]="form.codigoBarras" placeholder="Opcional" />
+      </label>
+    </div>
+    <div class="modal-actions">
+      <button type="button" (click)="fechar()">Cancelar</button>
+      <button type="button" class="btn-primary" [disabled]="salvando()" (click)="salvar()">
+        {{ salvando() ? 'Salvando…' : 'Cadastrar e adicionar' }}
+      </button>
+    </div>
+  </div>
+</div>

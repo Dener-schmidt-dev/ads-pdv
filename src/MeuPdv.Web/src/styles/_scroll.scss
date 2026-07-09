@@ -1,0 +1,56 @@
+@mixin mpdv-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: var(--mpdv-border-strong) transparent;
+
+  &::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: var(--mpdv-border-strong);
+    border-radius: 999px;
+    border: 2px solid transparent;
+    background-clip: padding-box;
+
+    &:hover {
+      background-color: var(--mpdv-text-muted);
+    }
+  }
+}
+
+.scroll-area {
+  @include mpdv-scroll;
+  overflow: auto;
+  overscroll-behavior: contain;
+}
+
+.table-scroll {
+  @include mpdv-scroll;
+  overflow: auto;
+  max-height: min(58vh, 520px);
+  margin: 0 -0.15rem;
+  padding: 0 0.15rem;
+  border-radius: var(--mpdv-radius-xs);
+
+  table {
+    margin: 0;
+  }
+
+  thead th {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    box-shadow: 0 1px 0 var(--mpdv-border);
+  }
+}
+
+.modal-card {
+  max-height: min(90vh, 640px);
+  overflow-y: auto;
+  @include mpdv-scroll;
+}

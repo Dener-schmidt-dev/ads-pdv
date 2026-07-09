@@ -1,0 +1,40 @@
+.relatorio-chart {
+  position: relative;
+  height: 280px;
+  width: 100%;
+
+  canvas {
+    display: block;
+    width: 100% !important;
+    height: 100% !important;
+  }
+}
+
+.relatorio-chart--empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--mpdv-surface-muted);
+  border: 1px dashed var(--mpdv-border);
+  border-radius: var(--mpdv-radius-sm);
+}
+
+.relatorio-chart__empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1.5rem;
+  text-align: center;
+  color: var(--mpdv-text-muted);
+
+  .mi {
+    font-size: 40px;
+    opacity: 0.45;
+  }
+
+  p {
+    margin: 0;
+    font-size: 0.85rem;
+  }
+}

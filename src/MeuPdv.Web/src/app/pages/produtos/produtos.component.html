@@ -1,0 +1,86 @@
+<div class="page">
+  <header class="page__header">
+    <h1>Produtos</h1>
+    <div class="page__actions">
+      @if (auth.temPermissao('CadastrarProduto')) {
+        <label class="btn-secondary">
+          Importar CSV
+          <input type="file" accept=".csv" hidden (change)="onArquivoCsv($event)" />
+        </label>
+        <button type="button" class="btn-secondary" (click)="exportarCsv()">Exportar CSV</button>
+        <a routerLink="/produtos/novo" class="btn-primary">Novo produto</a>
+      }
+    </div>
+  </header>
+
+  <section class="filters panel">
+    <input type="text" placeholder="Buscar por código ou descrição" [(ngModel)]="busca" (keyup.enter)="buscar()" />
+    <label><input type="checkbox" [(ngModel)]="somenteAtivos" (change)="buscar()" /> Somente ativos</label>
+    <label><input type="checkbox" [(ngModel)]="somenteAbaixoMinimo" (change)="buscar()" /> Abaixo do mínimo</label>
+    <button type="button" (click)="buscar()">Buscar</button>
+  </section>
+
+  @if (resultadoImport(); as r) {
+    <section class="panel info">
+      Importação: {{ r.importados }} importados, {{ r.ignorados }} ignorados.
+      @if (r.erros.length) {
+        <ul>@for (e of r.erros; track e) { <li>{{ e }}</li> }</ul>
+      }
+    </section>
+  }
+
+  <section class="panel panel--list">
+    <div class="table-scroll scroll-area">
+    <table>
+      <thead>
+        <tr>
+          <th></th>
+          <th>Código</th>
+          <th>Descrição</th>
+          <th>Preço</th>
+          <th>Estoque</th>
+          <th>Mín.</th>
+          <th>Status</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (p of produtos(); track p.id) {
+          <tr [class.alerta]="p.abaixoMinimo">
+            <td>
+              @if (urlImagemProduto(p.id, p.temImagem, p.updatedAt); as src) {
+                <img class="produto-thumb" [src]="src" [alt]="p.descricao" loading="lazy" />
+              } @else {
+                <span class="produto-thumb produto-thumb--placeholder" aria-hidden="true">
+                  <span class="mi">inventory_2</span>
+                </span>
+              }
+            </td>
+            <td>{{ p.codigoInterno }}<br /><small>{{ p.codigoBarras }}</small></td>
+            <td>{{ p.descricao }}</td>
+            <td class="col-valor">{{ p.precoVenda | brl }}</td>
+            <td>{{ p.estoqueAtual }}</td>
+            <td>{{ p.estoqueMinimo }}</td>
+            <td>{{ p.ativo ? 'Ativo' : 'Inativo' }}</td>
+            <td>
+              @if (auth.temPermissao('CadastrarProduto')) {
+                <a [routerLink]="['/produtos', p.id]" class="btn-link">Editar</a>
+                @if (p.ativo) {
+                  <button type="button" class="btn-link danger" (click)="inativar(p)">Inativar</button>
+                }
+              }
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+    </div>
+    <app-pagination
+      [pagina]="pagina"
+      [tamanho]="tamanhoPagina"
+      [total]="total()"
+      rotulo="produto"
+      (paginaChange)="irParaPagina($event)"
+    />
+  </section>
+</div>

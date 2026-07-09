@@ -1,0 +1,226 @@
+/* Ícones */
+.mi {
+  font-family: 'Material Symbols Rounded';
+  font-weight: normal;
+  font-style: normal;
+  font-size: 22px;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+
+  &--sm { font-size: 18px; }
+  &--lg { font-size: 28px; }
+  &--fill { font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+}
+
+kbd {
+  display: inline-block;
+  padding: 0.1rem 0.35rem;
+  font-family: inherit;
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: var(--mpdv-text-muted);
+  background: var(--mpdv-surface-muted);
+  border: 1px solid var(--mpdv-border);
+  border-radius: 4px;
+}
+
+/* Badges */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.2rem 0.55rem;
+  border-radius: 999px;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+
+  &--neutral {
+    background: var(--mpdv-surface-muted);
+    color: var(--mpdv-text-secondary);
+    border: 1px solid var(--mpdv-border);
+  }
+
+  &--success {
+    background: var(--mpdv-success-soft);
+    color: var(--mpdv-success-hover);
+  }
+
+  &--warning {
+    background: var(--mpdv-warning-soft);
+    color: var(--mpdv-warning);
+  }
+
+  &--danger {
+    background: var(--mpdv-danger-soft);
+    color: var(--mpdv-danger);
+  }
+
+  &--live {
+    background: var(--mpdv-success-soft);
+    color: var(--mpdv-success-hover);
+    border: 1px solid #bbf7d0;
+
+    &::before {
+      content: '';
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--mpdv-success);
+      animation: mpdv-pulse 2s ease infinite;
+    }
+  }
+}
+
+@keyframes mpdv-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+/* Botões */
+.btn-primary,
+.btn-secondary,
+.btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  padding: 0.5rem 1rem;
+  border-radius: var(--mpdv-radius-sm);
+  cursor: pointer;
+  font-size: 0.875rem;
+  font-weight: 600;
+  font-family: inherit;
+  line-height: 1.25;
+  transition:
+    background var(--mpdv-transition),
+    border-color var(--mpdv-transition),
+    color var(--mpdv-transition),
+    box-shadow var(--mpdv-transition);
+
+  &:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+  }
+}
+
+a.btn-primary,
+a.btn-secondary {
+  text-decoration: none;
+}
+
+.btn-primary {
+  background: var(--mpdv-primary);
+  color: #fff;
+  border: 1px solid var(--mpdv-primary-hover);
+  box-shadow: var(--mpdv-shadow-sm);
+
+  &:hover:not(:disabled) {
+    background: var(--mpdv-primary-hover);
+  }
+}
+
+.btn-primary--success {
+  background: var(--mpdv-success);
+  border-color: var(--mpdv-success-hover);
+
+  &:hover:not(:disabled) {
+    background: var(--mpdv-success-hover);
+  }
+}
+
+.btn-primary--danger {
+  background: var(--mpdv-danger);
+  border-color: #b91c1c;
+
+  &:hover:not(:disabled) {
+    background: #b91c1c;
+  }
+}
+
+.btn-secondary {
+  background: var(--mpdv-surface);
+  color: var(--mpdv-text);
+  border: 1px solid var(--mpdv-border-strong);
+
+  &:hover:not(:disabled) {
+    background: var(--mpdv-surface-muted);
+    border-color: var(--mpdv-primary-muted);
+    color: var(--mpdv-primary-hover);
+  }
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--mpdv-text-secondary);
+  border: 1px solid var(--mpdv-border);
+
+  &:hover:not(:disabled) {
+    background: var(--mpdv-surface-muted);
+    color: var(--mpdv-text);
+  }
+}
+
+a.btn-link {
+  text-decoration: none;
+  display: inline-flex;
+}
+
+.btn-link {
+  background: none;
+  border: none;
+  color: var(--mpdv-primary);
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 500;
+  font-family: inherit;
+  padding: 0.2rem 0.4rem;
+  border-radius: var(--mpdv-radius-xs);
+
+  &:hover {
+    background: var(--mpdv-primary-soft);
+  }
+
+  &.danger {
+    color: var(--mpdv-danger);
+    &:hover { background: var(--mpdv-danger-soft); }
+  }
+}
+
+/* Campos monetários / percentuais */
+.input-currency,
+.input-percent {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+input[type='text'],
+input[type='password'],
+input[type='number'],
+input[type='email'],
+input[type='search'],
+input[type='date'],
+select,
+textarea {
+  font-family: inherit;
+  font-size: 0.875rem;
+  color: var(--mpdv-text);
+  transition: border-color var(--mpdv-transition), box-shadow var(--mpdv-transition);
+
+  &:focus {
+    outline: none;
+    border-color: var(--mpdv-primary) !important;
+    box-shadow: var(--mpdv-focus-ring);
+  }
+
+  &:disabled {
+    background: var(--mpdv-surface-muted);
+    color: var(--mpdv-text-muted);
+    cursor: not-allowed;
+  }
+}

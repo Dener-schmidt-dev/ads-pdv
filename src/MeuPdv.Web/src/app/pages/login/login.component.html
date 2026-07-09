@@ -1,0 +1,51 @@
+<div class="login">
+  <section class="login__hero" aria-hidden="true">
+    <div class="login__hero-inner">
+      <div class="login__mark">M</div>
+      <h2>MeuPDV</h2>
+      <p>Vendas rápidas, estoque sob controle e caixa sempre em dia.</p>
+      <ul class="login__features">
+        <li><span class="mi mi--sm">wifi_off</span> Funciona sem internet</li>
+        <li><span class="mi mi--sm">bolt</span> Leitura por código de barras</li>
+        <li><span class="mi mi--sm">shield</span> Controle por perfil de usuário</li>
+      </ul>
+    </div>
+  </section>
+
+  <form class="login__card" (ngSubmit)="entrar()">
+    <header>
+      <h1>Entrar</h1>
+      <p>Use seu usuário e senha do sistema</p>
+    </header>
+
+    <label>
+      <span class="login__label">Usuário</span>
+      <div class="login__field">
+        <span class="mi mi--sm" aria-hidden="true">person</span>
+        <input type="text" name="login" [(ngModel)]="login" autocomplete="username" required autofocus />
+      </div>
+    </label>
+
+    <label>
+      <span class="login__label">Senha</span>
+      <div class="login__field">
+        <span class="mi mi--sm" aria-hidden="true">lock</span>
+        <input type="password" name="senha" [(ngModel)]="senha" autocomplete="current-password" required />
+      </div>
+    </label>
+
+    <label class="login__remember">
+      <input type="checkbox" [(ngModel)]="lembrar" name="lembrar" />
+      Manter usuário preenchido
+    </label>
+
+    <button type="submit" class="btn-primary login__submit" [disabled]="carregando()">
+      @if (carregando()) {
+        Entrando…
+      } @else {
+        <span class="mi mi--sm" aria-hidden="true">login</span>
+        Acessar sistema
+      }
+    </button>
+  </form>
+</div>

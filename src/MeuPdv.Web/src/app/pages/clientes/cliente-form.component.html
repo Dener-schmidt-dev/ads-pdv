@@ -1,0 +1,29 @@
+<div class="page">
+  <a routerLink="/clientes" class="page__back">
+    <span class="mi mi--sm" aria-hidden="true">arrow_back</span>
+    Voltar para clientes
+  </a>
+
+  <header class="page__header">
+    <h1>{{ editandoId() ? 'Editar cliente' : 'Novo cliente' }}</h1>
+  </header>
+
+  @if (carregando()) {
+    <p class="info">Carregando…</p>
+  } @else {
+    <section class="panel">
+      <div class="form-grid">
+        <label>Nome <input [(ngModel)]="form.nome" required /></label>
+        <label>CPF <input [(ngModel)]="form.cpf" placeholder="Opcional" /></label>
+        <label>Telefone <input [(ngModel)]="form.telefone" placeholder="Opcional" /></label>
+        <label class="full">Observações <input [(ngModel)]="form.observacoes" /></label>
+      </div>
+      <div class="form-actions">
+        <button type="button" (click)="cancelar()">Cancelar</button>
+        <button type="button" class="btn-primary" [disabled]="salvando()" (click)="salvar()">
+          {{ salvando() ? 'Salvando…' : 'Salvar' }}
+        </button>
+      </div>
+    </section>
+  }
+</div>

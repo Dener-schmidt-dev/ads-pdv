@@ -1,0 +1,97 @@
+<div class="page">
+  <header class="page__header">
+    <h1>Backup</h1>
+    <div class="page__actions">
+      <button type="button" class="btn-primary" [disabled]="executando()" (click)="executarBackup()">
+        {{ executando() ? 'Processando…' : 'Executar backup agora' }}
+      </button>
+    </div>
+  </header>
+
+  @if (status(); as s) {
+    <section class="panel">
+      <h2>Status</h2>
+      <dl class="status-grid">
+        <div><dt>Diretório</dt><dd>{{ s.diretorioBackup }}</dd></div>
+        <div><dt>Intervalo automático</dt><dd>{{ s.intervaloBackupMinutos }} min</dd></div>
+        <div><dt>Retenção</dt><dd>{{ s.diasRetencaoBackup }} dias</dd></div>
+        <div>
+          <dt>Último backup</dt>
+          <dd>
+            @if (s.ultimoBackupEm) {
+              {{ s.ultimoBackupEm | date:'dd/MM/yyyy HH:mm' }}
+              @if (s.ultimoBackupSucesso) { (OK) } @else { (falha) }
+            } @else {
+              Nenhum
+            }
+          </dd>
+        </div>
+        <div>
+          <dt>Ferramentas MongoDB</dt>
+          <dd>
+            @if (s.ferramentaDisponivel) {
+              {{ s.ferramentaDisponivel }}
+            } @else {
+              <span class="aviso">mongodump/mongorestore não encontrados</span>
+            }
+          </dd>
+        </div>
+      </dl>
+      <p class="hint">
+        Ajuste diretório, intervalo e retenção em
+        <a routerLink="/configuracoes">Configurações</a>.
+        É necessário instalar o <strong>MongoDB Database Tools</strong> no Windows.
+      </p>
+    </section>
+  }
+
+  <section class="panel panel--list">
+    <h2>Histórico</h2>
+    @if (historico().length === 0) {
+      <p class="info">Nenhum backup registrado.</p>
+    } @else {
+      <div class="table-scroll scroll-area">
+      <table>
+        <thead>
+          <tr>
+            <th>Data</th>
+            <th>Arquivo</th>
+            <th>Tamanho</th>
+            <th>Tipo</th>
+            <th>Status</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (item of historicoPagina().itens; track item.id) {
+            <tr [class.falha]="!item.sucesso">
+              <td>{{ item.createdAt | date:'dd/MM/yyyy HH:mm' }}</td>
+              <td>{{ item.nomeArquivo }}</td>
+              <td>{{ formatarTamanho(item.tamanhoBytes) }}</td>
+              <td>{{ item.automatico ? 'Automático' : 'Manual' }}</td>
+              <td>
+                @if (item.sucesso) { OK }
+                @else { {{ item.mensagemErro ?? 'Falha' }} }
+              </td>
+              <td>
+                @if (item.sucesso) {
+                  <button type="button" class="btn-link danger" [disabled]="executando()" (click)="restaurar(item)">
+                    Restaurar
+                  </button>
+                }
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+      </div>
+      <app-pagination
+        [pagina]="pagina()"
+        [tamanho]="tamanhoPagina"
+        [total]="historicoPagina().total"
+        rotulo="backup"
+        (paginaChange)="irParaPagina($event)"
+      />
+    }
+  </section>
+</div>

@@ -1,0 +1,30 @@
+.config-senha {
+  max-width: 360px;
+}
+
+.config-pdv-preview {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 140px;
+  margin-bottom: 0.75rem;
+  border: 1px dashed var(--mpdv-border);
+  border-radius: var(--mpdv-radius-sm);
+  background: var(--mpdv-surface-muted);
+  overflow: hidden;
+
+  img {
+    width: 100%;
+    max-height: 180px;
+    object-fit: cover;
+  }
+}
+
+.config-pdv-preview__vazio {
+  font-size: 0.85rem;
+  color: var(--mpdv-text-muted);
+}
+
+.config-pdv-imagem {
+  margin-bottom: 0.5rem;
+}

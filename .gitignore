@@ -1,0 +1,28 @@
+# .NET
+bin/
+obj/
+*.user
+*.suo
+.vs/
+
+# Node
+node_modules/
+dist/
+.angular/
+src/MeuPdv.Api/wwwroot/
+
+# Logs
+*.log
+.dev/
+
+# OS
+Thumbs.db
+.DS_Store
+
+# IDE
+.idea/
+*.swp
+
+# Secrets
+appsettings.*.local.json
+.env

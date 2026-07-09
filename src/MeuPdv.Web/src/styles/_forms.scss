@@ -1,0 +1,134 @@
+/* Campos de formulário padronizados (inputs, selects, datas) */
+
+@mixin mpdv-field-base {
+  width: 100%;
+  min-height: 2.35rem;
+  padding: 0.5rem 0.65rem;
+  border: 1px solid var(--mpdv-border-strong);
+  border-radius: var(--mpdv-radius-sm);
+  background: var(--mpdv-surface);
+  color: var(--mpdv-text);
+  font-family: inherit;
+  font-size: 0.875rem;
+  line-height: 1.35;
+  transition:
+    border-color var(--mpdv-transition),
+    box-shadow var(--mpdv-transition),
+    background var(--mpdv-transition);
+
+  &::placeholder {
+    color: var(--mpdv-text-muted);
+  }
+
+  &:hover:not(:disabled) {
+    border-color: var(--mpdv-primary-muted);
+  }
+
+  &:focus {
+    outline: none;
+    border-color: var(--mpdv-primary);
+    box-shadow: var(--mpdv-focus-ring);
+  }
+
+  &:disabled {
+    background: var(--mpdv-surface-muted);
+    color: var(--mpdv-text-muted);
+    cursor: not-allowed;
+  }
+}
+
+@mixin mpdv-select {
+  @include mpdv-field-base;
+  appearance: none;
+  padding-right: 2.25rem;
+  cursor: pointer;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2371717a' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.65rem center;
+  background-size: 16px;
+}
+
+/* Aplicação global em formulários e filtros */
+.form-grid,
+.filters,
+.modal-card,
+.relatorios__date,
+.panel {
+  input:not([type='checkbox']):not([type='radio']):not([type='file']):not([type='hidden']),
+  textarea,
+  select {
+    @include mpdv-field-base;
+  }
+
+  select {
+    @include mpdv-select;
+  }
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+
+  &__label {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--mpdv-text-secondary);
+  }
+
+  &__hint {
+    font-size: 0.72rem;
+    color: var(--mpdv-text-muted);
+    margin-top: -0.15rem;
+  }
+
+  &__readonly {
+    @include mpdv-field-base;
+    background: var(--mpdv-surface-muted);
+    color: var(--mpdv-text-secondary);
+    cursor: default;
+  }
+
+  &--checkbox {
+    flex-direction: row;
+    align-items: center;
+    gap: 0.45rem;
+    font-weight: 500;
+    cursor: pointer;
+
+    input[type='checkbox'] {
+      width: 1rem;
+      height: 1rem;
+      accent-color: var(--mpdv-primary);
+    }
+  }
+}
+
+.form-section {
+  margin-bottom: 1.25rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--mpdv-border);
+
+  &:last-of-type {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+  }
+
+  &__title {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin: 0 0 0.85rem;
+    font-size: 0.78rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--mpdv-text-muted);
+
+    .mi {
+      font-size: 18px;
+      color: var(--mpdv-primary);
+    }
+  }
+}

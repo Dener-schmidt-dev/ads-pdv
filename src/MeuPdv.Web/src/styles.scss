@@ -1,0 +1,31 @@
+@use 'styles/tokens';
+@use 'styles/ui';
+@use 'styles/forms';
+@use 'styles/scroll';
+@use 'styles/page';
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  height: 100%;
+  font-family: var(--mpdv-font);
+  font-size: 14px;
+  background: var(--mpdv-bg);
+  color: var(--mpdv-text);
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  background: var(--mpdv-primary-muted);
+  color: var(--mpdv-primary-hover);
+}
+
+a {
+  color: var(--mpdv-primary);
+}

@@ -1,0 +1,11 @@
+<Project>
+  <!--
+    Smart App Control / WDAC pode bloquear DLLs e EXEs gerados dentro do OneDrive.
+    Saída de build fora da pasta sincronizada (LocalAppData).
+  -->
+  <PropertyGroup>
+    <MeuPdvArtifactsRoot>$(LOCALAPPDATA)\MeuPdv\artifacts</MeuPdvArtifactsRoot>
+    <BaseOutputPath>$(MeuPdvArtifactsRoot)\bin\$(MSBuildProjectName)\</BaseOutputPath>
+    <BaseIntermediateOutputPath>$(MeuPdvArtifactsRoot)\obj\$(MSBuildProjectName)\</BaseIntermediateOutputPath>
+  </PropertyGroup>
+</Project>

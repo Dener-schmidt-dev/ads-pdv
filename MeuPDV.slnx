@@ -1,0 +1,12 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/MeuPdv.Api/MeuPdv.Api.csproj" />
+    <Project Path="src/MeuPdv.Application/MeuPdv.Application.csproj" />
+    <Project Path="src/MeuPdv.Domain/MeuPdv.Domain.csproj" />
+    <Project Path="src/MeuPdv.Infrastructure.Mongo/MeuPdv.Infrastructure.Mongo.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/MeuPdv.Api.Tests/MeuPdv.Api.Tests.csproj" />
+    <Project Path="tests/MeuPdv.Domain.Tests/MeuPdv.Domain.Tests.csproj" />
+  </Folder>
+</Solution>

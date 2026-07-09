@@ -1,0 +1,192 @@
+<div class="page estoque">
+  <header class="page__header">
+    <div>
+      <h1>Estoque</h1>
+      <p class="page__subtitle">Saldos, movimentações e alertas de reposição</p>
+    </div>
+  </header>
+
+  @if (alertas().length) {
+    <section class="panel panel--warning estoque__alertas">
+      <h2>
+        <span class="mi mi--sm">warning</span>
+        Estoque abaixo do mínimo ({{ alertas().length }})
+      </h2>
+      <ul>
+        @for (a of alertas(); track a.produtoId) {
+          <li>
+            <span>{{ a.descricao }}</span>
+            <span class="estoque__alerta-qtd">
+              <span class="mi mi--sm">inventory_2</span>
+              {{ a.estoqueAtual }} / mín. {{ a.estoqueMinimo }}
+            </span>
+          </li>
+        }
+      </ul>
+    </section>
+  }
+
+  <section class="filters panel estoque__filtros">
+    <input type="text" placeholder="Filtrar produto" [(ngModel)]="busca" (keyup.enter)="buscar()" />
+    <label class="estoque__filtro-check">
+      <input type="checkbox" [(ngModel)]="somenteAbaixoMinimo" (change)="buscar()" />
+      Abaixo do mínimo
+    </label>
+    <button type="button" class="btn-secondary" (click)="buscar()">
+      <span class="mi mi--sm">search</span>
+      Buscar
+    </button>
+  </section>
+
+  <section class="panel panel--list">
+    <h2>Saldos</h2>
+    <div class="table-scroll scroll-area">
+    <table class="estoque__tabela estoque__tabela--saldos">
+      <colgroup>
+        <col class="estoque__col estoque__col--codigo" />
+        <col class="estoque__col estoque__col--produto" />
+        <col class="estoque__col estoque__col--num" />
+        <col class="estoque__col estoque__col--num" />
+        @if (auth.temPermissao('MovimentarEstoque')) {
+          <col class="estoque__col estoque__col--acoes" />
+        }
+      </colgroup>
+      <thead>
+        <tr>
+          <th class="estoque__th estoque__th--codigo">Código</th>
+          <th class="estoque__th estoque__th--produto">Produto</th>
+          <th class="estoque__th estoque__th--num">Saldo</th>
+          <th class="estoque__th estoque__th--num">Mínimo</th>
+          @if (auth.temPermissao('MovimentarEstoque')) {
+            <th class="estoque__th estoque__th--acoes">Ações</th>
+          }
+        </tr>
+      </thead>
+      <tbody>
+        @for (s of saldosPagina().itens; track s.produtoId) {
+          <tr [class.alerta]="s.abaixoMinimo">
+            <td class="estoque__td estoque__td--codigo">{{ s.codigoInterno }}</td>
+            <td class="estoque__td estoque__td--produto" [title]="s.descricao">{{ s.descricao }}</td>
+            <td class="estoque__td estoque__td--num">
+              <span class="estoque__saldo" [class.estoque__saldo--baixo]="s.abaixoMinimo">
+                {{ s.estoqueAtual }}
+              </span>
+            </td>
+            <td class="estoque__td estoque__td--num">{{ s.estoqueMinimo }}</td>
+            @if (auth.temPermissao('MovimentarEstoque')) {
+              <td class="estoque__td estoque__td--acoes estoque__acoes">
+                <button type="button" class="estoque__acao estoque__acao--entrada" (click)="abrirMovimento(s, 'entrada')">
+                  <span class="mi">add_circle</span>
+                  Entrada
+                </button>
+                <button type="button" class="estoque__acao estoque__acao--saida" (click)="abrirMovimento(s, 'saida')">
+                  <span class="mi">remove_circle</span>
+                  Saída
+                </button>
+                <button type="button" class="estoque__acao estoque__acao--ajuste" (click)="abrirMovimento(s, 'ajuste')">
+                  <span class="mi">tune</span>
+                  Ajuste
+                </button>
+              </td>
+            }
+          </tr>
+        }
+      </tbody>
+    </table>
+    </div>
+    <app-pagination
+      [pagina]="paginaSaldos()"
+      [tamanho]="tamanhoPagina"
+      [total]="saldosPagina().total"
+      rotulo="produto"
+      (paginaChange)="irParaPaginaSaldos($event)"
+    />
+  </section>
+
+  <section class="panel panel--list">
+    <h2>Histórico recente</h2>
+    <div class="table-scroll scroll-area">
+    <table class="estoque__tabela estoque__tabela--historico">
+      <colgroup>
+        <col class="estoque__col estoque__col--data" />
+        <col class="estoque__col estoque__col--produto" />
+        <col class="estoque__col estoque__col--origem" />
+        <col class="estoque__col estoque__col--num" />
+        <col class="estoque__col estoque__col--saldo-hist" />
+        <col class="estoque__col estoque__col--motivo" />
+      </colgroup>
+      <thead>
+        <tr>
+          <th class="estoque__th estoque__th--data">Data</th>
+          <th class="estoque__th estoque__th--produto">Produto</th>
+          <th class="estoque__th estoque__th--origem">Origem</th>
+          <th class="estoque__th estoque__th--num">Qtd</th>
+          <th class="estoque__th estoque__th--saldo-hist">Saldo</th>
+          <th class="estoque__th estoque__th--motivo">Motivo</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (m of historico(); track m.id) {
+          <tr>
+            <td class="estoque__td estoque__td--data">{{ m.createdAt | date:'dd/MM/yy HH:mm' }}</td>
+            <td class="estoque__td estoque__td--produto" [title]="m.produtoDescricao">{{ m.produtoDescricao }}</td>
+            <td class="estoque__td estoque__td--origem">
+              <span [class]="classeOrigem(m.origem)">
+                <span class="mi">{{ iconeOrigem(m.origem) }}</span>
+                {{ labelOrigem(m.origem) }}
+              </span>
+            </td>
+            <td class="estoque__td estoque__td--num">
+              <span [class]="classeQuantidade(m)">
+                {{ formatarQuantidade(m) }}
+              </span>
+            </td>
+            <td class="estoque__td estoque__td--saldo-hist estoque__saldo-hist">
+              {{ m.saldoAnterior }}
+              <span class="mi">arrow_forward</span>
+              {{ m.saldoPosterior }}
+            </td>
+            <td class="estoque__td estoque__td--motivo">{{ m.motivo }}</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+    </div>
+    <app-pagination
+      [pagina]="paginaHistorico()"
+      [tamanho]="tamanhoPagina"
+      [total]="totalHistorico()"
+      rotulo="movimentação"
+      (paginaChange)="irParaPaginaHistorico($event)"
+    />
+  </section>
+
+  @if (mostrarModal()) {
+    <div class="modal-overlay" (click)="mostrarModal.set(false)">
+      <div class="modal-card estoque__modal estoque__modal--{{ tipoMov }}" (click)="$event.stopPropagation()">
+        <div class="estoque__modal-head">
+          <span class="estoque__modal-icon estoque__modal-icon--{{ tipoMov }}">
+            <span class="mi">
+              @if (tipoMov === 'entrada') { add_circle }
+              @else if (tipoMov === 'saida') { remove_circle }
+              @else { tune }
+            </span>
+          </span>
+          <h3>{{ tituloModal() }}</h3>
+        </div>
+        @if (tipoMov !== 'ajuste') {
+          <label>Quantidade <input type="number" step="0.01" min="0.01" [(ngModel)]="movForm.quantidade" /></label>
+        } @else {
+          <label>Saldo final <input type="number" step="0.01" [(ngModel)]="movForm.saldoFinal" /></label>
+        }
+        <label>Motivo <input [(ngModel)]="movForm.motivo" required /></label>
+        <div class="form-actions">
+          <button type="button" (click)="mostrarModal.set(false)">Cancelar</button>
+          <button type="button" class="btn-primary" [disabled]="salvando()" (click)="confirmarMovimento()">
+            Confirmar
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+</div>

@@ -1,0 +1,256 @@
+<div class="page caixa">
+  <header class="page__header caixa__header">
+    <div>
+      <h1>Caixa</h1>
+      <p class="page__subtitle">Sessão, suprimentos, sangrias e fechamento</p>
+    </div>
+    @if (sessao()) {
+      <span class="caixa__status caixa__status--open">
+        <span class="mi mi--sm">lock_open</span>
+        Caixa aberto
+      </span>
+    } @else {
+      <span class="caixa__status caixa__status--closed">
+        <span class="mi mi--sm">lock</span>
+        Caixa fechado
+      </span>
+    }
+  </header>
+
+  @if (resumoFechamento(); as r) {
+    <section class="panel caixa__resumo" [class.caixa__resumo--dif]="r.diferenca !== 0">
+      <header class="caixa__resumo-head">
+        <span class="caixa__resumo-icon">
+          <span class="mi">receipt_long</span>
+        </span>
+        <div>
+          <h2>Resumo do fechamento</h2>
+          <p>Fechado em {{ r.fechadaEm | date:'dd/MM/yy HH:mm' }}</p>
+        </div>
+        <button type="button" class="btn-ghost caixa__resumo-fechar" (click)="resumoFechamento.set(null)">
+          <span class="mi mi--sm">close</span>
+          Fechar
+        </button>
+      </header>
+
+      <div class="caixa__kpis">
+        <article class="caixa__kpi">
+          <span class="caixa__kpi-label">Valor inicial</span>
+          <strong>{{ r.valorInicial | brl }}</strong>
+        </article>
+        <article class="caixa__kpi caixa__kpi--success">
+          <span class="caixa__kpi-label">Suprimentos</span>
+          <strong>{{ r.totalSuprimentos | brl }}</strong>
+        </article>
+        <article class="caixa__kpi caixa__kpi--danger">
+          <span class="caixa__kpi-label">Sangrias</span>
+          <strong>{{ r.totalSangrias | brl }}</strong>
+        </article>
+        <article class="caixa__kpi caixa__kpi--primary">
+          <span class="caixa__kpi-label">Esperado (dinheiro)</span>
+          <strong>{{ r.valorEsperadoDinheiro | brl }}</strong>
+        </article>
+        <article class="caixa__kpi">
+          <span class="caixa__kpi-label">Valor contado</span>
+          <strong>{{ r.valorContado | brl }}</strong>
+        </article>
+        <article class="caixa__kpi" [class.caixa__kpi--danger]="r.diferenca < 0" [class.caixa__kpi--success]="r.diferenca > 0">
+          <span class="caixa__kpi-label">Diferença</span>
+          <strong>{{ r.diferenca | brl }}</strong>
+        </article>
+      </div>
+
+      @if (r.vendasPorForma.length) {
+        <div class="caixa__formas">
+          <h3>Vendas por forma de pagamento</h3>
+          <ul>
+            @for (f of r.vendasPorForma; track f.forma) {
+              <li><span>{{ f.forma }}</span><strong>{{ f.total | brl }}</strong></li>
+            }
+          </ul>
+        </div>
+      }
+    </section>
+  }
+
+  @if (!sessao()) {
+    @if (auth.temPermissao('AbrirCaixa')) {
+      <section class="panel caixa__abrir">
+        <header class="caixa__card-head">
+          <span class="caixa__card-icon caixa__card-icon--primary">
+            <span class="mi">lock_open</span>
+          </span>
+          <div>
+            <h2>Abrir caixa</h2>
+            <p>Inicie uma nova sessão informando o terminal e o fundo de troco.</p>
+          </div>
+        </header>
+        <div class="form-grid caixa__form">
+          <label>
+            Terminal
+            <input [(ngModel)]="caixaId" placeholder="Ex.: CAIXA-01" />
+          </label>
+          <label>
+            Valor inicial
+            <input appCurrencyInput [(ngModel)]="valorInicial" />
+          </label>
+        </div>
+        <button type="button" class="btn-primary caixa__btn-abrir" [disabled]="salvando()" (click)="abrir()">
+          <span class="mi mi--sm">lock_open</span>
+          Abrir caixa
+        </button>
+      </section>
+    }
+  } @else {
+    <section class="panel caixa__sessao-info">
+      <div class="caixa__sessao-main">
+        <span class="caixa__sessao-icon">
+          <span class="mi">point_of_sale</span>
+        </span>
+        <div>
+          <h2>Sessão ativa — {{ sessao()!.caixaIdentificador }}</h2>
+          <p>
+            Aberto em {{ sessao()!.abertaEm | date:'dd/MM/yy HH:mm' }}
+          </p>
+        </div>
+      </div>
+      <article class="caixa__sessao-kpi">
+        <span class="caixa__kpi-label">Valor inicial</span>
+        <strong>{{ sessao()!.valorInicial | brl }}</strong>
+      </article>
+    </section>
+
+    <div class="caixa__grid">
+      @if (auth.temPermissao('AbrirCaixa')) {
+        <section class="panel caixa__card caixa__card--mov">
+          <header class="caixa__card-head">
+            <span class="caixa__card-icon caixa__card-icon--mov">
+              <span class="mi">swap_vert</span>
+            </span>
+            <div>
+              <h2>Suprimento / Sangria</h2>
+              <p>Entrada ou retirada de dinheiro do caixa.</p>
+            </div>
+          </header>
+          <div class="form-grid caixa__form">
+            <label>
+              Valor
+              <input appCurrencyInput [(ngModel)]="valorMovimento" />
+            </label>
+            <label class="full">
+              Mot
+              <input [(ngModel)]="motivoMovimento" placeholder="Descreva o motivo da movimentação" />
+            </label>
+          </div>
+          <div class="caixa__acoes">
+            <button type="button" class="caixa__acao caixa__acao--suprimento" (click)="suprimento()" [disabled]="salvando()">
+              <span class="mi">add_circle</span>
+              Suprimento
+            </button>
+            <button type="button" class="caixa__acao caixa__acao--sangria" (click)="sangria()" [disabled]="salvando()">
+              <span class="mi">remove_circle</span>
+              Sangria
+            </button>
+          </div>
+        </section>
+      }
+
+      @if (auth.temPermissao('FecharCaixa')) {
+        <section class="panel caixa__card caixa__card--fechar">
+          <header class="caixa__card-head">
+            <span class="caixa__card-icon caixa__card-icon--fechar">
+              <span class="mi">lock</span>
+            </span>
+            <div>
+              <h2>Fechar caixa</h2>
+              <p>Informe o valor contado em dinheiro para encerrar a sessão.</p>
+            </div>
+          </header>
+          <div class="form-grid caixa__form">
+            <label>
+              Valor contado
+              <input appCurrencyInput [(ngModel)]="valorContado" />
+            </label>
+            <label class="full">
+              Observação
+              <input [(ngModel)]="observacaoFechamento" placeholder="Opcional" />
+            </label>
+          </div>
+          <button type="button" class="btn-primary btn-primary--danger caixa__btn-fechar" [disabled]="salvando()" (click)="fechar()">
+            <span class="mi mi--sm">lock</span>
+            Fechar caixa
+          </button>
+        </section>
+      }
+    </div>
+  }
+
+  <section class="panel panel--list caixa__historico">
+    <header class="caixa__historico-head">
+      <h2>
+        <span class="mi mi--sm">history</span>
+        Histórico de sessões
+      </h2>
+    </header>
+
+    @if (historico().length === 0) {
+      <div class="caixa__empty">
+        <span class="mi">history</span>
+        <p>Nenhuma sessão registrada ainda.</p>
+      </div>
+    } @else {
+      <div class="table-scroll scroll-area">
+        <table class="caixa__tabela">
+          <colgroup>
+            <col class="caixa__col caixa__col--caixa" />
+            <col class="caixa__col caixa__col--status" />
+            <col class="caixa__col caixa__col--data" />
+            <col class="caixa__col caixa__col--data" />
+            <col class="caixa__col caixa__col--valor" />
+          </colgroup>
+          <thead>
+            <tr>
+              <th class="caixa__th caixa__th--caixa">Caixa</th>
+              <th class="caixa__th caixa__th--status">Status</th>
+              <th class="caixa__th caixa__th--data">Abertura</th>
+              <th class="caixa__th caixa__th--data">Fechamento</th>
+              <th class="caixa__th caixa__th--valor">Inicial</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (h of historico(); track h.id) {
+              <tr [class.caixa__row--open]="h.status === 'Aberta'">
+                <td class="caixa__td caixa__td--caixa">
+                  <span class="caixa__terminal">{{ h.caixaIdentificador }}</span>
+                </td>
+                <td class="caixa__td caixa__td--status">
+                  <span [class]="classeStatus(h.status)">
+                    <span class="mi">{{ iconeStatus(h.status) }}</span>
+                    {{ labelStatus(h.status) }}
+                  </span>
+                </td>
+                <td class="caixa__td caixa__td--data">{{ h.abertaEm | date:'dd/MM/yy HH:mm' }}</td>
+                <td class="caixa__td caixa__td--data">
+                  @if (h.fechadaEm) {
+                    {{ h.fechadaEm | date:'dd/MM/yy HH:mm' }}
+                  } @else {
+                    <span class="caixa__em-aberto">Em aberto</span>
+                  }
+                </td>
+                <td class="caixa__td caixa__td--valor">{{ h.valorInicial | brl }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+
+    <app-pagination
+      [pagina]="paginaHistorico"
+      [tamanho]="tamanhoPagina"
+      [total]="totalHistorico()"
+      rotulo="sessão"
+      (paginaChange)="irParaPaginaHistorico($event)"
+    />
+  </section>
+</div>

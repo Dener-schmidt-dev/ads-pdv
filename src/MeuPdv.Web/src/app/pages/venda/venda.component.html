@@ -1,0 +1,301 @@
+<div
+  class="pdv"
+  [class.pdv--bloqueado]="!caixaAberto()"
+  [class.pdv--com-fundo]="!!pdvTheme.urlImagemFundo()"
+  [style.background-image]="pdvTheme.urlImagemFundo() ? 'url(' + pdvTheme.urlImagemFundo() + ')' : null"
+>
+  <header class="pdv__top">
+    <div class="pdv__brand">
+      <a routerLink="/inicio" class="pdv__menu-btn" title="Menu">
+        <span class="mi mi--sm" aria-hidden="true">menu</span>
+      </a>
+      <span class="pdv__logo">{{ pdvTheme.tituloPdv() }}</span>
+    </div>
+    <div class="pdv__info">
+      <span class="pdv__chip"><span class="mi mi--sm" aria-hidden="true">store</span>{{ caixaId }}</span>
+      <span class="pdv__chip"><span class="mi mi--sm" aria-hidden="true">person</span>{{ auth.usuario()?.nome }}</span>
+      <span class="pdv__chip" [class.pdv__chip--open]="caixaAberto()" [class.pdv__chip--closed]="!caixaAberto()">
+        <span class="mi mi--sm" aria-hidden="true">{{ caixaAberto() ? 'lock_open' : 'lock' }}</span>
+        {{ caixaAberto() ? 'Caixa aberto' : 'Caixa fechado' }}
+      </span>
+      <span class="badge badge--live">Offline</span>
+    </div>
+  </header>
+
+  @if (!caixaAberto()) {
+    <div class="pdv__aviso-caixa" role="alert">
+      <span class="mi" aria-hidden="true">lock</span>
+      <div>
+        <strong>Caixa fechado</strong>
+        <p>Abra o caixa para registrar vendas neste terminal.</p>
+      </div>
+      <a routerLink="/caixa" class="pdv__abrir-caixa">
+        <span class="mi mi--sm" aria-hidden="true">account_balance_wallet</span>
+        Abrir caixa
+      </a>
+    </div>
+  }
+
+  <div class="pdv__body">
+    <section class="pdv__main">
+      <div class="pdv__busca-wrap">
+        <input
+          #buscaInput
+          type="text"
+          class="pdv__busca"
+          [placeholder]="caixaAberto() ? 'Passe o código de barras ou digite o produto' : 'Abra o caixa para vender'"
+          [(ngModel)]="busca"
+          (input)="onBuscaInput()"
+          (keydown)="onBuscaKeydown($event)"
+          [disabled]="!caixaAberto()"
+          autocomplete="off"
+        />
+        @if (cart.feedback(); as fb) {
+          <span class="pdv__feedback">+ {{ fb }}</span>
+        }
+        @if (sugestoes().length || mostrarCriarProduto()) {
+          <ul class="pdv__sugestoes scroll-area">
+            @for (s of sugestoes(); track s.id; let i = $index) {
+              <li [class.active]="i === sugestaoIndex()" (mousedown)="selecionarSugestao(s); $event.preventDefault()">
+                @if (urlImagemProduto(s.id, s.temImagem); as src) {
+                  <img class="produto-thumb produto-thumb--lg" [src]="src" [alt]="s.descricao" loading="lazy" />
+                } @else {
+                  <span class="produto-thumb produto-thumb--lg produto-thumb--placeholder" aria-hidden="true">
+                    <span class="mi">inventory_2</span>
+                  </span>
+                }
+                <span class="pdv__sugestao-texto">{{ s.descricao }}</span>
+                <span class="pdv__preco">{{ s.precoVenda | brl }}</span>
+              </li>
+            }
+            @if (mostrarCriarProduto()) {
+              <li
+                class="pdv__sugestao-criar"
+                [class.active]="sugestaoIndex() === sugestoes().length"
+                (mousedown)="abrirCriarProduto(); $event.preventDefault()"
+              >
+                <span class="mi">add_circle</span>
+                Criar novo produto
+              </li>
+            }
+          </ul>
+        }
+      </div>
+
+      <div class="pdv__carrinho scroll-area">
+        <table>
+          <thead>
+            <tr>
+              <th>Produto</th>
+              <th>Qtd</th>
+              <th>Unit.</th>
+              <th>Total</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (item of cart.itens(); track item.produtoId; let i = $index) {
+              <tr
+                [class.selected]="i === cart.linhaSelecionada()"
+                (click)="selecionarLinha(i)"
+              >
+                <td class="pdv__item-produto">
+                  @if (urlImagemProduto(item.produtoId, item.temImagem); as src) {
+                    <img class="produto-thumb" [src]="src" [alt]="item.descricao" loading="lazy" />
+                  } @else {
+                    <span class="produto-thumb produto-thumb--placeholder" aria-hidden="true">
+                      <span class="mi">inventory_2</span>
+                    </span>
+                  }
+                  <span>{{ item.descricao }}</span>
+                </td>
+                <td class="qty" (dblclick)="selecionarLinha(i); abrirQtyModal()">{{ item.quantidade }}</td>
+                <td class="col-valor">{{ item.precoUnitario | brl }}</td>
+                <td class="col-valor">{{ item.quantidade * item.precoUnitario | brl }}</td>
+                <td>
+                  @if (auth.temPermissao('CancelarItem')) {
+                    <button type="button" class="remove" (click)="removerLinha(i); $event.stopPropagation()" title="Remover">
+                      <span class="mi mi--sm" aria-hidden="true">delete</span>
+                    </button>
+                  }
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+        @if (!cart.itens().length) {
+          <div class="pdv__vazio">
+            @if (caixaAberto()) {
+              <span class="mi pdv__vazio-icon" aria-hidden="true">shopping_cart</span>
+              <p>Aguardando leitura de produtos…</p>
+            } @else {
+              <span class="mi pdv__vazio-icon" aria-hidden="true">lock</span>
+              <p>Vendas bloqueadas até abrir o caixa.</p>
+            }
+          </div>
+        }
+      </div>
+    </section>
+
+    <aside class="pdv__side">
+      <div class="pdv__totais">
+        <div class="linha"><span>Subtotal</span><span>{{ cart.subtotal() | brl }}</span></div>
+        @if (cart.desconto() > 0) {
+          <div class="linha desconto"><span>Desconto</span><span>- {{ cart.desconto() | brl }}</span></div>
+        }
+        <div class="linha total"><span>Total</span><span>{{ cart.total() | brl }}</span></div>
+      </div>
+      <button type="button" class="btn-primary btn-primary--success btn-finalizar" (click)="abrirPagamento()" [disabled]="!podeFinalizar()">
+        <span class="mi mi--sm" aria-hidden="true">payments</span>
+        Finalizar <kbd>F5</kbd>
+      </button>
+      <button type="button" class="btn-cancelar" (click)="cancelarVenda()" [disabled]="!caixaAberto() || !cart.itens().length">
+        <span class="mi mi--sm" aria-hidden="true">close</span>
+        Cancelar <kbd>F6</kbd>
+      </button>
+    </aside>
+  </div>
+
+  <footer class="pdv__footer">
+    <div class="pdv__cliente-wrap">
+      <label class="pdv__cliente-label">Cliente</label>
+      <app-cliente-lookup
+        #clienteLookup
+        class="pdv__cliente-lookup"
+        [ngModel]="cart.cliente()"
+        (ngModelChange)="onClienteChange($event)"
+        (solicitarCriar)="onClienteCriarSolicitado($event)"
+        [disabled]="!caixaAberto()"
+        [dropUp]="true"
+        placeholder="Buscar ou cadastrar cliente (F2)"
+      />
+    </div>
+    <div class="pdv__atalhos">
+      <span><kbd>F2</kbd> Cliente</span>
+      <span><kbd>F3</kbd> Quantidade</span>
+      @if (auth.temPermissao('ConcederDesconto')) {
+        <span><kbd>F4</kbd> Desconto</span>
+      }
+      @if (auth.temPermissao('CancelarItem')) {
+        <span><kbd>Del</kbd> Remover</span>
+      }
+      <span><kbd>F5</kbd> Finalizar</span>
+      <span><kbd>F6</kbd> Cancelar</span>
+      <span><kbd>Esc</kbd> Fechar</span>
+    </div>
+  </footer>
+
+</div>
+
+@if (modalClienteRapido()) {
+  <app-cliente-quick-modal
+    [nomeInicial]="clienteRapidoNome"
+    (criado)="onClienteRapidoCriado($event)"
+    (cancelado)="onClienteRapidoCancelado()"
+  />
+}
+
+@if (modalProdutoRapido()) {
+  <app-produto-quick-modal
+    [descricaoInicial]="produtoRapidoTermo"
+    [codigoBarrasInicial]="produtoRapidoBarras"
+    (criado)="onProdutoRapidoCriado($event)"
+    (cancelado)="onProdutoRapidoCancelado()"
+  />
+}
+
+@if (modal() === 'qty') {
+  <div class="modal-overlay pdv-modal-overlay" (click)="fecharModal()">
+    <div class="modal-card" (click)="$event.stopPropagation()">
+      <h3>Alterar quantidade</h3>
+      <p>{{ cart.itens()[cart.linhaSelecionada()]?.descricao }}</p>
+      <input type="number" step="0.01" min="0.01" [(ngModel)]="qtyModal" autofocus />
+      <div class="modal-actions">
+        <button type="button" (click)="fecharModal()">Cancelar</button>
+        <button type="button" class="btn-primary" (click)="confirmarQty()">Confirmar</button>
+      </div>
+    </div>
+  </div>
+}
+
+@if (modal() === 'desconto') {
+  <div class="modal-overlay pdv-modal-overlay" (click)="fecharModal()">
+    <div class="modal-card" (click)="$event.stopPropagation()">
+      <h3>Desconto</h3>
+      <label><input type="radio" name="modo" [value]="'valor'" [(ngModel)]="descontoModo" /> Valor (R$)</label>
+      <label><input type="radio" name="modo" [value]="'percentual'" [(ngModel)]="descontoModo" /> Percentual (%)</label>
+      @if (descontoModo === 'valor') {
+        <input appCurrencyInput [(ngModel)]="descontoValor" />
+      } @else {
+        <input appPercentInput [(ngModel)]="descontoPercentual" />
+      }
+      <input placeholder="Motivo (obrigatório se acima do limite)" [(ngModel)]="motivoDesconto" />
+      <div class="modal-actions">
+        <button type="button" (click)="fecharModal()">Cancelar</button>
+        <button type="button" class="btn-primary" (click)="confirmarDesconto()">Confirmar</button>
+      </div>
+    </div>
+  </div>
+}
+
+@if (modal() === 'pagamento') {
+  <div class="modal-overlay pdv-modal-overlay" (click)="fecharModal()">
+    <div class="modal-card modal-card--pagamento" (click)="$event.stopPropagation()">
+      <h3>Finalizar venda</h3>
+      <p class="total-modal">{{ cart.total() | brl }}</p>
+      <p class="restante">Restante: {{ restantePagamento() | brl }}</p>
+
+      <div class="pag-form">
+        <select [(ngModel)]="formaAtual" (ngModelChange)="onFormaPagamentoChange()">
+          <option value="Dinheiro">Dinheiro</option>
+          <option value="CartaoDebito">Cartão débito</option>
+          <option value="CartaoCredito">Cartão crédito</option>
+          <option value="Pix">Pix</option>
+          <option value="Outros">Outros</option>
+        </select>
+        <input appCurrencyInput placeholder="Valor" [(ngModel)]="valorPagamento" (change)="formaAtual === 'Pix' && gerarPixQr()" />
+        @if (formaAtual === 'Dinheiro') {
+          <input appCurrencyInput placeholder="Recebido" [(ngModel)]="valorRecebido" />
+        }
+        @if (formaAtual === 'Pix') {
+          <button type="button" (click)="gerarPixQr()" [disabled]="pixGerando()">
+            {{ pixGerando() ? 'Gerando…' : 'Atualizar QR Code' }}
+          </button>
+        }
+        <button type="button" (click)="adicionarPagamento()">Adicionar</button>
+      </div>
+
+      @if (formaAtual === 'Pix' && pixQr(); as pix) {
+        <div class="pix-box">
+          @if (pix.qrCodeBase64) {
+            <img class="pix-qr" [src]="'data:image/png;base64,' + pix.qrCodeBase64" alt="QR Code Pix" />
+          }
+          <label class="pix-copia">Copia e cola</label>
+          <textarea readonly rows="3">{{ pix.copiaCola }}</textarea>
+          <label class="pix-confirm">
+            <input type="checkbox" [(ngModel)]="pixConfirmado" />
+            Pagamento Pix confirmado pelo operador
+          </label>
+          <small>Sem integração bancária — confirme após o cliente pagar.</small>
+        </div>
+      }
+
+      <ul class="pag-lista">
+        @for (p of pagamentos(); track $index) {
+          <li>{{ labelForma(p.forma) }}: {{ p.valor | brl }}</li>
+        }
+      </ul>
+
+      @if (troco() > 0) {
+        <p class="troco">Troco: {{ troco() | brl }}</p>
+      }
+
+      <div class="modal-actions">
+        <button type="button" (click)="fecharModal()">Voltar</button>
+        <button type="button" class="btn-primary btn-primary--success" [disabled]="processando()" (click)="confirmarVenda()">
+          {{ processando() ? 'Processando…' : 'Confirmar venda' }}
+        </button>
+      </div>
+    </div>
+  </div>
+}

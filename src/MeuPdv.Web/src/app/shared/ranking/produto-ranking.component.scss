@@ -1,0 +1,107 @@
+.produto-ranking {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+
+.produto-ranking__item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.65rem;
+  padding: 0.55rem 0.65rem;
+  border-radius: var(--mpdv-radius-sm);
+  background: var(--mpdv-surface-muted);
+  border: 1px solid var(--mpdv-border);
+}
+
+.produto-ranking__pos {
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--mpdv-primary-hover);
+  background: var(--mpdv-primary-soft);
+  flex-shrink: 0;
+  margin-top: 0.1rem;
+}
+
+.produto-ranking__body {
+  flex: 1;
+  min-width: 0;
+}
+
+.produto-ranking__row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.35rem;
+}
+
+.produto-ranking__nome {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--mpdv-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.produto-ranking__valor {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--mpdv-primary-hover);
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.produto-ranking__bar {
+  height: 6px;
+  border-radius: 999px;
+  background: var(--mpdv-border);
+  overflow: hidden;
+  margin-bottom: 0.25rem;
+}
+
+.produto-ranking__fill {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #3b82f6, #2563eb);
+  transition: width 400ms ease;
+}
+
+.produto-ranking__qtd {
+  font-size: 0.72rem;
+  color: var(--mpdv-text-muted);
+}
+
+.ranking-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 1.25rem;
+  text-align: center;
+  color: var(--mpdv-text-muted);
+  background: var(--mpdv-surface-muted);
+  border: 1px dashed var(--mpdv-border);
+  border-radius: var(--mpdv-radius-sm);
+
+  .mi {
+    font-size: 32px;
+    opacity: 0.45;
+  }
+
+  p {
+    margin: 0;
+    font-size: 0.85rem;
+  }
+}

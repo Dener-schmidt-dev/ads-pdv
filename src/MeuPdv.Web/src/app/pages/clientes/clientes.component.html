@@ -1,0 +1,56 @@
+<div class="page">
+  <header class="page__header">
+    <h1>Clientes</h1>
+    <div class="page__actions">
+      <a routerLink="/clientes/novo" class="btn-primary">Novo cliente</a>
+    </div>
+  </header>
+
+  <section class="panel filters">
+    <input type="text" placeholder="Buscar por nome, CPF ou telefone" [(ngModel)]="busca" (keyup.enter)="buscar()" />
+    <label>
+      <input type="checkbox" [(ngModel)]="somenteAtivos" (change)="buscar()" />
+      Somente ativos
+    </label>
+    <button type="button" (click)="buscar()">Buscar</button>
+  </section>
+
+  <section class="panel panel--list">
+    <div class="table-scroll scroll-area">
+    <table>
+      <thead>
+        <tr>
+          <th>Nome</th>
+          <th>CPF</th>
+          <th>Telefone</th>
+          <th>Status</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (c of clientes(); track c.id) {
+          <tr [class.inativo]="!c.ativo">
+            <td>{{ c.nome }}</td>
+            <td>{{ c.cpf || '—' }}</td>
+            <td>{{ c.telefone || '—' }}</td>
+            <td>{{ c.ativo ? 'Ativo' : 'Inativo' }}</td>
+            <td>
+              @if (c.ativo) {
+                <a [routerLink]="['/clientes', c.id]" class="btn-link">Editar</a>
+                <button type="button" class="btn-link danger" (click)="inativar(c)">Inativar</button>
+              }
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+    </div>
+    <app-pagination
+      [pagina]="pagina"
+      [tamanho]="tamanhoPagina"
+      [total]="total()"
+      rotulo="cliente"
+      (paginaChange)="irParaPagina($event)"
+    />
+  </section>
+</div>

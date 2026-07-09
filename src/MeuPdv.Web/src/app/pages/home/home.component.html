@@ -1,0 +1,183 @@
+<main class="home">
+  <header class="home__header">
+    <div>
+      <h1>Olá, {{ auth.usuario()?.nome ?? 'usuário' }}</h1>
+      <p class="home__sub">Painel do seu ponto de venda</p>
+    </div>
+    <div class="home__header-actions">
+      @if (sessaoCaixa(); as caixa) {
+        <span class="home__badge home__badge--open">
+          <span class="mi mi--sm" aria-hidden="true">lock_open</span>
+          Caixa aberto
+        </span>
+      } @else {
+        <span class="home__badge home__badge--closed">
+          <span class="mi mi--sm" aria-hidden="true">lock</span>
+          Caixa fechado
+        </span>
+      }
+      <span class="badge badge--live">Offline</span>
+    </div>
+  </header>
+
+  <section class="home__actions">
+    <a routerLink="/venda" class="home__action home__action--primary">
+      <span class="mi" aria-hidden="true">point_of_sale</span>
+      <span>Nova venda</span>
+    </a>
+    <a routerLink="/caixa" class="home__action">
+      <span class="mi" aria-hidden="true">account_balance_wallet</span>
+      <span>Caixa</span>
+    </a>
+    <a routerLink="/produtos" class="home__action">
+      <span class="mi" aria-hidden="true">inventory_2</span>
+      <span>Produtos</span>
+    </a>
+    @if (podeVerRelatorios()) {
+      <a routerLink="/relatorios" class="home__action">
+        <span class="mi" aria-hidden="true">bar_chart</span>
+        <span>Relatórios</span>
+      </a>
+    }
+  </section>
+
+  @if (podeVerRelatorios()) {
+    <section class="home__periodo">
+      <span>Período:</span>
+      <button type="button" class="home__periodo-btn" [class.active]="periodoDias === 7" (click)="aplicarPeriodo(7)">7 dias</button>
+      <button type="button" class="home__periodo-btn" [class.active]="periodoDias === 30" (click)="aplicarPeriodo(30)">30 dias</button>
+    </section>
+
+    @if (carregando()) {
+      <div class="home__loading">
+        <span class="home__spinner" aria-hidden="true"></span>
+        <p>Carregando indicadores…</p>
+      </div>
+    } @else if (vendas(); as v) {
+      <section class="home__kpis">
+        <article class="home__kpi home__kpi--primary">
+          <span class="mi home__kpi-icon" aria-hidden="true">shopping_bag</span>
+          <div>
+            <span class="home__kpi-label">Vendas</span>
+            <strong>{{ v.quantidadeVendas }}</strong>
+          </div>
+        </article>
+        <article class="home__kpi home__kpi--success">
+          <span class="mi home__kpi-icon" aria-hidden="true">payments</span>
+          <div>
+            <span class="home__kpi-label">Faturamento</span>
+            <strong>{{ v.total | brl }}</strong>
+          </div>
+        </article>
+        <article class="home__kpi">
+          <span class="mi home__kpi-icon" aria-hidden="true">avg_pace</span>
+          <div>
+            <span class="home__kpi-label">Ticket médio</span>
+            <strong>{{ ticketMedio() | brl }}</strong>
+          </div>
+        </article>
+        <article class="home__kpi" [class.home__kpi--danger]="alertasEstoque().length > 0">
+          <span class="mi home__kpi-icon" aria-hidden="true">warning</span>
+          <div>
+            <span class="home__kpi-label">Estoque baixo</span>
+            <strong>{{ alertasEstoque().length }}</strong>
+          </div>
+        </article>
+      </section>
+
+      <section class="home__dashboard">
+        <article class="home__card-chart">
+          <header class="home__card-head">
+            <span class="mi" aria-hidden="true">show_chart</span>
+            <div>
+              <h2>Evolução das vendas</h2>
+              <p>Últimos {{ periodoDias }} dias</p>
+            </div>
+          </header>
+          <app-relatorio-chart
+            [config]="chartVendasLinha()"
+            titulo="Gráfico de evolução das vendas"
+            [empty]="v.vendas.length === 0"
+          />
+        </article>
+
+        <article class="home__card-chart">
+          <header class="home__card-head">
+            <span class="mi" aria-hidden="true">donut_large</span>
+            <div>
+              <h2>Formas de pagamento</h2>
+              <p>Distribuição do faturamento</p>
+            </div>
+          </header>
+          <app-relatorio-chart
+            [config]="chartPagamentos()"
+            titulo="Gráfico de formas de pagamento"
+            [empty]="v.porFormaPagamento.length === 0"
+          />
+        </article>
+
+        <article class="home__card-ranking">
+          <header class="home__card-head">
+            <span class="mi" aria-hidden="true">leaderboard</span>
+            <div>
+              <h2>Top produtos</h2>
+              <p>Por faturamento no período</p>
+            </div>
+          </header>
+          <app-produto-ranking [itens]="produtos()?.itens ?? []" [limite]="5" />
+        </article>
+
+        @if (alertasEstoque().length > 0) {
+          <article class="home__card-alerts">
+            <header class="home__card-head">
+              <span class="mi" aria-hidden="true">inventory</span>
+              <div>
+                <h2>Alertas de estoque</h2>
+                <p>Produtos abaixo do mínimo</p>
+              </div>
+            </header>
+            <ul class="home__alerts scroll-area">
+              @for (a of alertasEstoque().slice(0, 5); track a.produtoId) {
+                <li>
+                  <strong>{{ a.descricao }}</strong>
+                  <span>{{ a.estoqueAtual }} / mín. {{ a.estoqueMinimo }}</span>
+                </li>
+              }
+            </ul>
+            <a routerLink="/estoque" class="home__alerts-link">Ver estoque</a>
+          </article>
+        }
+      </section>
+    }
+  } @else {
+    <section class="home__welcome panel">
+      <span class="mi home__welcome-icon" aria-hidden="true">dashboard</span>
+      <div>
+        <h2>Pronto para vender</h2>
+        <p>Use o atalho acima para abrir o PDV ou acesse o caixa para iniciar o turno.</p>
+      </div>
+    </section>
+
+    @if (alertasEstoque().length > 0) {
+      <section class="home__card-alerts home__card-alerts--solo panel">
+        <header class="home__card-head">
+          <span class="mi" aria-hidden="true">warning</span>
+          <div>
+            <h2>{{ alertasEstoque().length }} produto(s) com estoque baixo</h2>
+          </div>
+        </header>
+        <a routerLink="/estoque" class="home__alerts-link">Verificar estoque</a>
+      </section>
+    }
+  }
+
+  @if (health(); as h) {
+    <footer class="home__status">
+      <span>API {{ h.status }}</span>
+      <span>·</span>
+      <span>MongoDB {{ h.mongodb ? 'OK' : 'indisponível' }}</span>
+      <span>·</span>
+      <span>v{{ h.versao }}</span>
+    </footer>
+  }
+</main>

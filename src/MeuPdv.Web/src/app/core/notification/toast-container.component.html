@@ -1,0 +1,11 @@
+<div class="toast-stack" aria-live="polite" aria-relevant="additions">
+  @for (n of notifications(); track n.id) {
+    <div class="toast toast--{{ n.type }}" role="alert">
+      <span class="mi toast__icon" aria-hidden="true">{{ icon(n.type) }}</span>
+      <p class="toast__text">{{ n.message }}</p>
+      <button type="button" class="toast__close" (click)="dismiss(n.id)" aria-label="Fechar">
+        <span class="mi mi--sm" aria-hidden="true">close</span>
+      </button>
+    </div>
+  }
+</div>

@@ -1,0 +1,28 @@
+<div class="modal-overlay pdv-modal-overlay" (click)="fechar()">
+  <div class="modal-card lookup-modal" (click)="$event.stopPropagation()">
+    <h3>
+      <span class="mi mi--sm">person_add</span>
+      Novo cliente
+    </h3>
+    <div class="form-grid">
+      <label class="full">
+        Nome
+        <input [(ngModel)]="form.nome" required autofocus />
+      </label>
+      <label>
+        CPF
+        <input [(ngModel)]="form.cpf" placeholder="Opcional" />
+      </label>
+      <label>
+        Telefone
+        <input [(ngModel)]="form.telefone" placeholder="Opcional" />
+      </label>
+    </div>
+    <div class="modal-actions">
+      <button type="button" (click)="fechar()">Cancelar</button>
+      <button type="button" class="btn-primary" [disabled]="salvando()" (click)="salvar()">
+        {{ salvando() ? 'Salvando…' : 'Cadastrar e usar' }}
+      </button>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,32 @@
+<div class="page">
+  <a routerLink="/usuarios" class="page__back">
+    <span class="mi mi--sm" aria-hidden="true">arrow_back</span>
+    Voltar para usuários
+  </a>
+
+  <header class="page__header">
+    <h1>Novo usuário</h1>
+  </header>
+
+  <section class="panel">
+    <div class="form-grid">
+      <label>Login <input [(ngModel)]="form.login" name="login" required /></label>
+      <label>Nome <input [(ngModel)]="form.nome" name="nome" required /></label>
+      <label>Senha <input type="password" [(ngModel)]="form.senha" name="senha" required /></label>
+      <label>
+        Perfil
+        <select [(ngModel)]="form.perfil" name="perfil">
+          @for (p of perfis(); track p.nome) {
+            <option [value]="p.nome">{{ labelPerfil(p.nome) }}</option>
+          }
+        </select>
+      </label>
+    </div>
+    <div class="form-actions">
+      <button type="button" (click)="cancelar()">Cancelar</button>
+      <button type="button" class="btn-primary" [disabled]="salvando()" (click)="salvar()">
+        {{ salvando() ? 'Salvando…' : 'Salvar' }}
+      </button>
+    </div>
+  </section>
+</div>

@@ -1,0 +1,176 @@
+<div class="page">
+  <a routerLink="/produtos" class="page__back">
+    <span class="mi mi--sm" aria-hidden="true">arrow_back</span>
+    Voltar para produtos
+  </a>
+
+  <header class="page__header">
+    <h1>{{ editandoId() ? 'Editar produto' : 'Novo produto' }}</h1>
+  </header>
+
+  @if (carregando()) {
+    <p class="info">Carregando…</p>
+  } @else {
+    <section class="panel produto-form">
+      <div class="produto-imagem">
+        <div class="produto-imagem__box">
+          <button
+            type="button"
+            class="produto-imagem__picker"
+            (click)="abrirSeletorImagem()"
+            aria-label="Selecionar foto do produto"
+          >
+            <div class="produto-imagem__preview">
+              @if (previewUrl(); as src) {
+                <img [src]="src" alt="Foto do produto" />
+              } @else {
+                <span class="produto-imagem__vazio">
+                  <span class="mi" aria-hidden="true">add_a_photo</span>
+                  <span>Clique para adicionar foto</span>
+                </span>
+              }
+            </div>
+          </button>
+          <input
+            #inputImagem
+            class="produto-imagem__input"
+            type="file"
+            accept="image/jpeg,image/png,image/webp"
+            (change)="onImagemSelecionada($event)"
+          />
+          <div class="produto-imagem__meta">
+            <p class="produto-imagem__titulo">Foto do produto</p>
+            <p class="produto-imagem__hint">JPG, PNG ou WebP — máximo 2 MB. Clique na área ao lado para enviar ou trocar a imagem.</p>
+            @if (previewUrl() || temImagemAtual()) {
+              <button type="button" class="btn-link danger produto-imagem__remover" (click)="marcarRemoverImagem()">
+                Remover imagem
+              </button>
+            }
+          </div>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <h2 class="form-section__title">
+          <span class="mi" aria-hidden="true">inventory_2</span>
+          Identificação
+        </h2>
+        <div class="form-grid">
+          @if (editandoId()) {
+            <label class="form-field">
+              <span class="form-field__label">Cód. interno</span>
+              <span class="form-field__readonly">{{ form.codigoInterno }}</span>
+            </label>
+          } @else {
+            <label class="form-field">
+              <span class="form-field__label">Cód. interno</span>
+              <input [(ngModel)]="form.codigoInterno" placeholder="Gerado automaticamente se vazio" />
+              <span class="form-field__hint">Deixe em branco para numeração automática</span>
+            </label>
+          }
+          <label class="form-field">
+            <span class="form-field__label">Cód. barras</span>
+            <input [(ngModel)]="form.codigoBarras" placeholder="EAN / código de leitura" />
+          </label>
+          <label class="form-field full">
+            <span class="form-field__label">Descrição</span>
+            <input [(ngModel)]="form.descricao" required placeholder="Nome do produto na venda" />
+          </label>
+          <label class="form-field">
+            <span class="form-field__label">Marca</span>
+            <input [(ngModel)]="form.marca" placeholder="Opcional" />
+          </label>
+          <label class="form-field">
+            <span class="form-field__label">Categoria</span>
+            <select [(ngModel)]="form.categoriaId">
+              <option value="">Sem categoria</option>
+              @for (c of categorias(); track c.id) {
+                <option [value]="c.id">{{ c.nome }}</option>
+              }
+            </select>
+          </label>
+          <label class="form-field">
+            <span class="form-field__label">Unidade</span>
+            <select [(ngModel)]="form.unidade">
+              @for (u of unidades; track u) {
+                <option [value]="u">{{ u }}</option>
+              }
+            </select>
+          </label>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <h2 class="form-section__title">
+          <span class="mi" aria-hidden="true">payments</span>
+          Preços e custos
+        </h2>
+        <div class="form-grid">
+          <label class="form-field">
+            <span class="form-field__label">Preço de venda</span>
+            <input appCurrencyInput [(ngModel)]="form.precoVenda" [disabled]="!auth.temPermissao('AlterarPreco')" />
+          </label>
+          <label class="form-field">
+            <span class="form-field__label">Custo</span>
+            <input appCurrencyInput [(ngModel)]="form.custo" [disabled]="!auth.temPermissao('AlterarPreco')" />
+          </label>
+          <label class="form-field">
+            <span class="form-field__label">Margem estimada</span>
+            <span class="form-field__readonly">{{ margemLucro() }}</span>
+            <span class="form-field__hint">Calculada com base no preço e custo informados</span>
+          </label>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <h2 class="form-section__title">
+          <span class="mi" aria-hidden="true">warehouse</span>
+          Estoque
+        </h2>
+        <div class="form-grid">
+          @if (editandoId()) {
+            <label class="form-field">
+              <span class="form-field__label">Estoque atual</span>
+              <span class="form-field__readonly">{{ form.estoqueAtual }}</span>
+              <span class="form-field__hint">Altere pelo módulo Estoque</span>
+            </label>
+          } @else {
+            <label class="form-field">
+              <span class="form-field__label">Estoque inicial</span>
+              <input type="number" step="0.01" min="0" [(ngModel)]="form.estoqueAtual" />
+            </label>
+          }
+          <label class="form-field">
+            <span class="form-field__label">Estoque mínimo</span>
+            <input type="number" step="0.01" min="0" [(ngModel)]="form.estoqueMinimo" />
+            <span class="form-field__hint">Alerta quando o saldo ficar abaixo deste valor</span>
+          </label>
+          @if (editandoId()) {
+            <label class="form-field form-field--checkbox">
+              <input type="checkbox" [(ngModel)]="form.ativo" />
+              <span>Produto ativo para venda</span>
+            </label>
+          }
+        </div>
+      </div>
+
+      <div class="form-section">
+        <h2 class="form-section__title">
+          <span class="mi" aria-hidden="true">notes</span>
+          Observações
+        </h2>
+        <label class="form-field full">
+          <span class="form-field__label">Notas internas</span>
+          <textarea [(ngModel)]="form.observacoes" rows="3" placeholder="Informações adicionais sobre o produto (não aparece no cupom)"></textarea>
+        </label>
+      </div>
+
+      <div class="form-actions">
+        <button type="button" (click)="cancelar()">Cancelar</button>
+        <button type="button" class="btn-primary" [disabled]="salvando()" (click)="salvar()">
+          {{ salvando() ? 'Salvando…' : 'Salvar' }}
+        </button>
+      </div>
+    </section>
+  }
+</div>

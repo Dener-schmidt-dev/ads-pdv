@@ -1,0 +1,334 @@
+<div class="page relatorios">
+  <header class="page__header relatorios__header">
+    <div>
+      <h1>Relatórios</h1>
+      <p class="relatorios__subtitle">Acompanhe vendas, produtos mais vendidos e alertas de estoque</p>
+    </div>
+    <div class="page__actions">
+      <button type="button" class="btn-secondary" (click)="exportarCsv()">
+        <span class="mi mi--sm" aria-hidden="true">download</span>
+        Exportar CSV
+      </button>
+      <button type="button" class="btn-secondary" (click)="exportarPdf()">
+        <span class="mi mi--sm" aria-hidden="true">picture_as_pdf</span>
+        Exportar PDF
+      </button>
+    </div>
+  </header>
+
+  <nav class="tabs relatorios__tabs">
+    <button type="button" [class.active]="aba() === 'vendas'" (click)="trocarAba('vendas')">
+      <span class="mi mi--sm" aria-hidden="true">receipt_long</span>
+      Vendas
+    </button>
+    <button type="button" [class.active]="aba() === 'produtos'" (click)="trocarAba('produtos')">
+      <span class="mi mi--sm" aria-hidden="true">leaderboard</span>
+      Mais vendidos
+    </button>
+    <button type="button" [class.active]="aba() === 'estoque'" (click)="trocarAba('estoque')">
+      <span class="mi mi--sm" aria-hidden="true">inventory</span>
+      Estoque baixo
+    </button>
+  </nav>
+
+  @if (aba() !== 'estoque') {
+    <section class="panel relatorios__filters">
+      <div class="relatorios__periodo">
+        <label class="relatorios__date">
+          <span>De</span>
+          <app-date-input [(ngModel)]="dataInicio" />
+        </label>
+        <label class="relatorios__date">
+          <span>Até</span>
+          <app-date-input [(ngModel)]="dataFim" />
+        </label>
+        <button type="button" class="btn-primary" (click)="carregar()" [disabled]="carregando()">
+          <span class="mi mi--sm" aria-hidden="true">refresh</span>
+          Atualizar
+        </button>
+      </div>
+      <div class="relatorios__presets">
+        <span>Atalhos:</span>
+        <button type="button" class="relatorios__preset" (click)="aplicarPeriodo(7)">7 dias</button>
+        <button type="button" class="relatorios__preset" (click)="aplicarPeriodo(30)">30 dias</button>
+        <button type="button" class="relatorios__preset" (click)="aplicarPeriodo(90)">90 dias</button>
+      </div>
+    </section>
+  } @else {
+    <section class="panel relatorios__filters">
+      <button type="button" class="btn-primary" (click)="carregar()" [disabled]="carregando()">
+        <span class="mi mi--sm" aria-hidden="true">refresh</span>
+        Atualizar
+      </button>
+    </section>
+  }
+
+  @if (carregando()) {
+    <div class="relatorios__loading">
+      <span class="relatorios__spinner" aria-hidden="true"></span>
+      <p>Carregando relatório…</p>
+    </div>
+  }
+
+  @if (!carregando() && aba() === 'vendas' && vendas(); as v) {
+    <section class="relatorios__kpis">
+      <article class="rel-kpi rel-kpi--primary">
+        <span class="mi rel-kpi__icon" aria-hidden="true">shopping_bag</span>
+        <div>
+          <span class="rel-kpi__label">Vendas</span>
+          <strong>{{ v.quantidadeVendas }}</strong>
+        </div>
+      </article>
+      <article class="rel-kpi rel-kpi--success">
+        <span class="mi rel-kpi__icon" aria-hidden="true">payments</span>
+        <div>
+          <span class="rel-kpi__label">Faturamento</span>
+          <strong>{{ v.total | brl }}</strong>
+        </div>
+      </article>
+      <article class="rel-kpi rel-kpi--warning">
+        <span class="mi rel-kpi__icon" aria-hidden="true">sell</span>
+        <div>
+          <span class="rel-kpi__label">Descontos</span>
+          <strong>{{ v.descontos | brl }}</strong>
+        </div>
+      </article>
+      <article class="rel-kpi">
+        <span class="mi rel-kpi__icon" aria-hidden="true">avg_pace</span>
+        <div>
+          <span class="rel-kpi__label">Ticket médio</span>
+          <strong>{{ ticketMedio() | brl }}</strong>
+        </div>
+      </article>
+    </section>
+
+    <section class="relatorios__charts">
+      <article class="chart-card">
+        <header class="chart-card__head">
+          <span class="mi" aria-hidden="true">show_chart</span>
+          <div>
+            <h2>Evolução das vendas</h2>
+            <p>Faturamento diário no período selecionado</p>
+          </div>
+        </header>
+        <app-relatorio-chart
+          [config]="chartVendasLinha()"
+          titulo="Gráfico de evolução das vendas"
+          [empty]="v.vendas.length === 0"
+        />
+      </article>
+
+      <article class="chart-card">
+        <header class="chart-card__head">
+          <span class="mi" aria-hidden="true">donut_large</span>
+          <div>
+            <h2>Formas de pagamento</h2>
+            <p>Distribuição do faturamento por método</p>
+          </div>
+        </header>
+        <app-relatorio-chart
+          [config]="chartPagamentos()"
+          titulo="Gráfico de formas de pagamento"
+          [empty]="v.porFormaPagamento.length === 0"
+        />
+      </article>
+    </section>
+
+    <section class="panel relatorios__table-section">
+      <header class="relatorios__table-head">
+        <span class="mi" aria-hidden="true">table_rows</span>
+        <h2>Detalhamento das vendas</h2>
+      </header>
+
+      @if (v.vendas.length === 0) {
+        <p class="info">Nenhuma venda no período.</p>
+      } @else {
+        <div class="table-scroll scroll-area">
+          <table>
+            <thead>
+              <tr>
+                <th>Nº</th>
+                <th>Data</th>
+                <th>Subtotal</th>
+                <th>Desconto</th>
+                <th>Total</th>
+                <th>Pagamentos</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (item of vendasTabela().itens; track item.id) {
+                <tr>
+                  <td>{{ item.numero }}</td>
+                  <td>{{ item.data | date:'dd/MM/yyyy HH:mm' }}</td>
+                  <td class="col-valor">{{ item.subtotal | brl }}</td>
+                  <td class="col-valor">{{ item.desconto | brl }}</td>
+                  <td class="col-valor">{{ item.total | brl }}</td>
+                  <td>{{ item.formasPagamento }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+        <app-pagination
+          [pagina]="paginaVendas()"
+          [tamanho]="tamanhoPagina"
+          [total]="vendasTabela().total"
+          rotulo="venda"
+          (paginaChange)="paginaVendas.set($event)"
+        />
+      }
+    </section>
+  }
+
+  @if (!carregando() && aba() === 'produtos' && produtos(); as p) {
+    <section class="relatorios__kpis relatorios__kpis--compact">
+      <article class="rel-kpi rel-kpi--primary">
+        <span class="mi rel-kpi__icon" aria-hidden="true">inventory_2</span>
+        <div>
+          <span class="rel-kpi__label">Produtos no ranking</span>
+          <strong>{{ p.itens.length }}</strong>
+        </div>
+      </article>
+      <article class="rel-kpi rel-kpi--success">
+        <span class="mi rel-kpi__icon" aria-hidden="true">payments</span>
+        <div>
+          <span class="rel-kpi__label">Valor total vendido</span>
+          <strong>{{ totalProdutos(p) | brl }}</strong>
+        </div>
+      </article>
+    </section>
+
+    <section class="relatorios__ranking panel">
+      <header class="chart-card__head">
+        <span class="mi" aria-hidden="true">leaderboard</span>
+        <div>
+          <h2>Top produtos por faturamento</h2>
+          <p>Ranking compacto por valor vendido no período</p>
+        </div>
+      </header>
+      <app-produto-ranking [itens]="p.itens" [limite]="10" />
+    </section>
+
+    <section class="panel relatorios__table-section">
+      <header class="relatorios__table-head">
+        <span class="mi" aria-hidden="true">table_rows</span>
+        <h2>Lista completa</h2>
+      </header>
+
+      @if (p.itens.length === 0) {
+        <p class="info">Nenhuma venda no período.</p>
+      } @else {
+        <div class="table-scroll scroll-area">
+          <table>
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Código</th>
+                <th>Descrição</th>
+                <th>Quantidade</th>
+                <th>Valor total</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (item of produtosTabela().itens; track item.produtoId; let i = $index) {
+                <tr>
+                  <td class="relatorios__rank">{{ (paginaProdutos() - 1) * tamanhoPagina + i + 1 }}</td>
+                  <td>{{ item.codigoInterno }}</td>
+                  <td>{{ item.descricao }}</td>
+                  <td>{{ item.quantidade }}</td>
+                  <td class="col-valor">{{ item.valorTotal | brl }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+        <app-pagination
+          [pagina]="paginaProdutos()"
+          [tamanho]="tamanhoPagina"
+          [total]="produtosTabela().total"
+          rotulo="produto"
+          (paginaChange)="paginaProdutos.set($event)"
+        />
+      }
+    </section>
+  }
+
+  @if (!carregando() && aba() === 'estoque') {
+    <section class="relatorios__kpis relatorios__kpis--compact">
+      <article class="rel-kpi rel-kpi--danger">
+        <span class="mi rel-kpi__icon" aria-hidden="true">warning</span>
+        <div>
+          <span class="rel-kpi__label">Produtos em alerta</span>
+          <strong>{{ estoque().length }}</strong>
+        </div>
+      </article>
+    </section>
+
+    <section class="relatorios__charts relatorios__charts--single">
+      <article class="chart-card chart-card--wide">
+        <header class="chart-card__head">
+          <span class="mi" aria-hidden="true">stacked_bar_chart</span>
+          <div>
+            <h2>Estoque atual vs. mínimo</h2>
+            <p>Compare o saldo disponível com o nível mínimo configurado</p>
+          </div>
+        </header>
+        <app-relatorio-chart
+          [config]="chartEstoque()"
+          titulo="Gráfico de estoque baixo"
+          [empty]="estoque().length === 0"
+        />
+      </article>
+    </section>
+
+    <section class="panel relatorios__table-section">
+      <header class="relatorios__table-head">
+        <span class="mi" aria-hidden="true">table_rows</span>
+        <h2>Produtos abaixo do mínimo</h2>
+      </header>
+
+      @if (estoque().length === 0) {
+        <p class="info">Nenhum produto abaixo do estoque mínimo.</p>
+      } @else {
+        <div class="table-scroll scroll-area">
+          <table>
+            <thead>
+              <tr>
+                <th>Código</th>
+                <th>Descrição</th>
+                <th>Estoque atual</th>
+                <th>Estoque mínimo</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (item of estoqueTabela().itens; track item.produtoId) {
+                <tr class="alerta">
+                  <td>{{ item.codigoInterno }}</td>
+                  <td>{{ item.descricao }}</td>
+                  <td>{{ item.estoqueAtual }}</td>
+                  <td>{{ item.estoqueMinimo }}</td>
+                  <td>
+                    <span class="relatorios__badge relatorios__badge--danger">Abaixo do mínimo</span>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+        <app-pagination
+          [pagina]="paginaEstoque()"
+          [tamanho]="tamanhoPagina"
+          [total]="estoqueTabela().total"
+          rotulo="produto"
+          (paginaChange)="paginaEstoque.set($event)"
+        />
+      }
+    </section>
+  }
+
+  <p class="hint relatorios__hint">
+    <span class="mi mi--sm" aria-hidden="true">info</span>
+    PDF abre a janela de impressão do navegador (salvar como PDF). Nos gráficos, passe o mouse para ver detalhes.
+  </p>
+</div>
